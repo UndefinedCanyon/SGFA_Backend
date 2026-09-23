@@ -69,4 +69,9 @@ public class ArtesanoRepositoryAdapter implements ArtesanoRepositoryPort {
                 entity.getDescripcionCorta()
         );
     }
+    @Override
+    public Optional<Artesano> buscarPorCorreo(String correoElectronico) {
+        return artesanoJpaRepository.findByCorreoElectronico(correoElectronico)
+                .map(this::aDominio);
+    }
 }

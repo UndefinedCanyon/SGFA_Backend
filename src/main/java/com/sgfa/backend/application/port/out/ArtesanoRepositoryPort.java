@@ -11,6 +11,8 @@ public interface ArtesanoRepositoryPort {
 
     Optional<Artesano> buscarPorId(Long id);
 
+    Optional<Artesano> buscarPorCorreo(String correoElectronico);
+
     List<Artesano> listarTodos();
 
     boolean existePorCorreo(String correoElectronico);
