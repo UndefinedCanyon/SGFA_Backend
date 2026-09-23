@@ -1,5 +1,8 @@
 package com.sgfa.backend.infrastructure.config;
 
+import com.sgfa.backend.application.port.in.IniciarSesionUseCase;
+import com.sgfa.backend.application.port.out.AdministradorRepositoryPort;
+import com.sgfa.backend.application.usecase.IniciarSesionService;
 import com.sgfa.backend.application.port.in.CrearLugarUseCase;
 import com.sgfa.backend.application.port.in.ConsultarLugaresUseCase;
 import com.sgfa.backend.application.port.in.RegistrarArtesanoUseCase;
@@ -42,6 +45,11 @@ public class UseCaseConfig {
     @Bean
     public CrearFeriaUseCase crearFeriaUseCase(FeriaRepositoryPort feriaRepositoryPort) {
         return new CrearFeriaService(feriaRepositoryPort);
+    }
+        @Bean
+    public IniciarSesionUseCase iniciarSesionUseCase(ArtesanoRepositoryPort artesanoRepositoryPort,
+     AdministradorRepositoryPort administradorRepositoryPort) {
+        return new IniciarSesionService(artesanoRepositoryPort, administradorRepositoryPort);
     }
 
     @Bean
