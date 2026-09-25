@@ -37,9 +37,10 @@ public class UseCaseConfig {
         return new ConsultarLugaresService(lugarRepositoryPort);
     }
 
-    @Bean
-    public RegistrarArtesanoUseCase registrarArtesanoUseCase(ArtesanoRepositoryPort artesanoRepositoryPort) {
-        return new RegistrarArtesanoService(artesanoRepositoryPort);
+     @Bean
+    public RegistrarArtesanoUseCase registrarArtesanoUseCase(ArtesanoRepositoryPort artesanoRepositoryPort,
+    AdministradorRepositoryPort administradorRepositoryPort) {
+        return new RegistrarArtesanoService(artesanoRepositoryPort, administradorRepositoryPort);
     }
 
     @Bean
