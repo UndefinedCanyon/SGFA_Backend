@@ -4,7 +4,7 @@ USE sgfa_db;
 -- Administrador (único, creado directamente por nosotros)
 -- ---------------------------------------------------------
 INSERT INTO administrador (nombre, correo_electronico, contrasena)
-VALUES ('Admin SGFA', 'admin@sgfa.com', 'admin123');
+VALUES ('Admin SGFA', 'admin@sgfa.com', '$2b$10$XCB89QB0Z7p36C/aSdAYceRLKPK7ZexjchofRUwqu0gOvX6Ov.3me');
 
 -- ---------------------------------------------------------
 -- Lugares
@@ -32,9 +32,9 @@ INSERT INTO edicion_feria (id_feria, id_lugar, fecha_inicio, fecha_fin) VALUES
 -- Artesanos
 -- ---------------------------------------------------------
 INSERT INTO artesano (nombre, correo_electronico, contrasena, cc, telefono, nombre_emprendimiento, descripcion_corta) VALUES
-('Maria Gomez', 'maria@correo.com', 'clave123', '1000111222', '3001112233', 'Tejidos Maria', 'Tejidos artesanales en lana y algodón'),
-('Carlos Perez', 'carlos@correo.com', 'clave123', '1000222333', '3002223344', 'Ceramica Carlos', 'Piezas de cerámica hechas a mano'),
-('Laura Diaz', 'laura@correo.com', 'clave123', '1000333444', '3003334455', 'Dulces Laura', 'Repostería artesanal y dulces tradicionales');
+('Maria Gomez', 'maria@correo.com', '$2b$10$O5uAiP6go1h1t/57I3lJUuWxFNG3u/D/1utXt6.Uf2kzLmn2pFgy2', '1000111222', '3001112233', 'Tejidos Maria', 'Tejidos artesanales en lana y algodón'),
+('Carlos Perez', 'carlos@correo.com', '$2b$10$O5uAiP6go1h1t/57I3lJUuWxFNG3u/D/1utXt6.Uf2kzLmn2pFgy2', '1000222333', '3002223344', 'Ceramica Carlos', 'Piezas de cerámica hechas a mano'),
+('Laura Diaz', 'laura@correo.com', '$2b$10$O5uAiP6go1h1t/57I3lJUuWxFNG3u/D/1utXt6.Uf2kzLmn2pFgy2', '1000333444', '3003334455', 'Dulces Laura', 'Repostería artesanal y dulces tradicionales');
 
 -- ---------------------------------------------------------
 -- Productos

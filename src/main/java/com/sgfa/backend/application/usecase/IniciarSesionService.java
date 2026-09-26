@@ -7,6 +7,7 @@ import com.sgfa.backend.application.port.out.ArtesanoRepositoryPort;
 import com.sgfa.backend.domain.model.Administrador;
 import com.sgfa.backend.domain.model.Artesano;
 import com.sgfa.backend.domain.model.SesionIniciada;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -14,11 +15,14 @@ public class IniciarSesionService implements IniciarSesionUseCase {
 
     private final ArtesanoRepositoryPort artesanoRepositoryPort;
     private final AdministradorRepositoryPort administradorRepositoryPort;
+    private final PasswordEncoder passwordEncoder;
 
     public IniciarSesionService(ArtesanoRepositoryPort artesanoRepositoryPort,
-                                 AdministradorRepositoryPort administradorRepositoryPort) {
+                                 AdministradorRepositoryPort administradorRepositoryPort,
+                                 PasswordEncoder passwordEncoder) {
         this.artesanoRepositoryPort = artesanoRepositoryPort;
         this.administradorRepositoryPort = administradorRepositoryPort;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -28,7 +32,7 @@ public class IniciarSesionService implements IniciarSesionUseCase {
 
         if (artesanoEncontrado.isPresent()) {
             Artesano artesano = artesanoEncontrado.get();
-            if (!artesano.getContrasena().equals(contrasena)) {
+            if (!passwordEncoder.matches(contrasena, artesano.getContrasena())) {
                 throw new CredencialesInvalidasException("Correo o contraseña incorrectos.");
             }
             return new SesionIniciada(artesano.getId(), artesano.getNombre(),
@@ -39,7 +43,7 @@ public class IniciarSesionService implements IniciarSesionUseCase {
 
         if (adminEncontrado.isPresent()) {
             Administrador admin = adminEncontrado.get();
-            if (!admin.getContrasena().equals(contrasena)) {
+            if (!passwordEncoder.matches(contrasena, admin.getContrasena())) {
                 throw new CredencialesInvalidasException("Correo o contraseña incorrectos.");
             }
             return new SesionIniciada(admin.getId(), admin.getNombre(),
