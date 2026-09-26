@@ -7,6 +7,7 @@ import com.sgfa.backend.application.port.out.ArtesanoRepositoryPort;
 import com.sgfa.backend.domain.model.Administrador;
 import com.sgfa.backend.domain.model.Artesano;
 import com.sgfa.backend.domain.model.SesionIniciada;
+import com.sgfa.backend.infrastructure.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
@@ -16,13 +17,16 @@ public class IniciarSesionService implements IniciarSesionUseCase {
     private final ArtesanoRepositoryPort artesanoRepositoryPort;
     private final AdministradorRepositoryPort administradorRepositoryPort;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public IniciarSesionService(ArtesanoRepositoryPort artesanoRepositoryPort,
                                  AdministradorRepositoryPort administradorRepositoryPort,
-                                 PasswordEncoder passwordEncoder) {
+                                 PasswordEncoder passwordEncoder,
+                                 JwtService jwtService) {
         this.artesanoRepositoryPort = artesanoRepositoryPort;
         this.administradorRepositoryPort = administradorRepositoryPort;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -35,8 +39,9 @@ public class IniciarSesionService implements IniciarSesionUseCase {
             if (!passwordEncoder.matches(contrasena, artesano.getContrasena())) {
                 throw new CredencialesInvalidasException("Correo o contraseña incorrectos.");
             }
+            String token = jwtService.generarToken(artesano.getCorreoElectronico(), "ARTESANO", artesano.getId());
             return new SesionIniciada(artesano.getId(), artesano.getNombre(),
-                    artesano.getCorreoElectronico(), "ARTESANO");
+                    artesano.getCorreoElectronico(), "ARTESANO", token);
         }
 
         Optional<Administrador> adminEncontrado = administradorRepositoryPort.buscarPorCorreo(correoElectronico);
@@ -46,8 +51,9 @@ public class IniciarSesionService implements IniciarSesionUseCase {
             if (!passwordEncoder.matches(contrasena, admin.getContrasena())) {
                 throw new CredencialesInvalidasException("Correo o contraseña incorrectos.");
             }
+            String token = jwtService.generarToken(admin.getCorreoElectronico(), "ADMINISTRADOR", admin.getId());
             return new SesionIniciada(admin.getId(), admin.getNombre(),
-                    admin.getCorreoElectronico(), "ADMINISTRADOR");
+                    admin.getCorreoElectronico(), "ADMINISTRADOR", token);
         }
 
         throw new CredencialesInvalidasException("Correo o contraseña incorrectos.");

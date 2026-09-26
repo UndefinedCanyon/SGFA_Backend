@@ -1,5 +1,6 @@
 package com.sgfa.backend.infrastructure.config;
 
+import com.sgfa.backend.infrastructure.security.JwtService;
 import com.sgfa.backend.application.port.in.CrearLugarUseCase;
 import com.sgfa.backend.application.port.in.ConsultarLugaresUseCase;
 import com.sgfa.backend.application.port.in.RegistrarArtesanoUseCase;
@@ -48,8 +49,11 @@ public class UseCaseConfig {
         return new CrearFeriaService(feriaRepositoryPort);
     }
         @Bean
-    public IniciarSesionUseCase iniciarSesionUseCase(ArtesanoRepositoryPort artesanoRepositoryPort,AdministradorRepositoryPort administradorRepositoryPort,PasswordEncoder passwordEncoder) {
-        return new IniciarSesionService(artesanoRepositoryPort, administradorRepositoryPort, passwordEncoder);
+    public IniciarSesionUseCase iniciarSesionUseCase(ArtesanoRepositoryPort artesanoRepositoryPort,
+                                                       AdministradorRepositoryPort administradorRepositoryPort,
+                                                       PasswordEncoder passwordEncoder,
+                                                       JwtService jwtService) {
+        return new IniciarSesionService(artesanoRepositoryPort, administradorRepositoryPort, passwordEncoder, jwtService);
     }
 
     @Bean
