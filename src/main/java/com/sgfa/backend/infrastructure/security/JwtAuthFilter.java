@@ -40,10 +40,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (jwtService.esTokenValido(token)) {
             String correo = jwtService.extraerCorreo(token);
             String rol = jwtService.extraerRol(token);
+            Long id = jwtService.extraerId(token);
 
             var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + rol));
 
-            var authentication = new UsernamePasswordAuthenticationToken(correo, null, authorities);
+            var detalles = new UsuarioAutenticado(id, correo, rol);
+            var authentication = new UsernamePasswordAuthenticationToken(detalles, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 

@@ -1,5 +1,14 @@
 package com.sgfa.backend.infrastructure.config;
 
+import com.sgfa.backend.application.port.in.ConsultarProductosUseCase;
+import com.sgfa.backend.application.usecase.ConsultarProductosService;
+import com.sgfa.backend.application.port.in.RegistrarProductoUseCase;
+import com.sgfa.backend.application.port.in.ActualizarProductoUseCase;
+import com.sgfa.backend.application.port.in.EliminarProductoUseCase;
+import com.sgfa.backend.application.port.out.ProductoRepositoryPort;
+import com.sgfa.backend.application.usecase.RegistrarProductoService;
+import com.sgfa.backend.application.usecase.ActualizarProductoService;
+import com.sgfa.backend.application.usecase.EliminarProductoService;
 import com.sgfa.backend.infrastructure.security.JwtService;
 import com.sgfa.backend.application.port.in.CrearLugarUseCase;
 import com.sgfa.backend.application.port.in.ConsultarLugaresUseCase;
@@ -48,12 +57,18 @@ public class UseCaseConfig {
     public CrearFeriaUseCase crearFeriaUseCase(FeriaRepositoryPort feriaRepositoryPort) {
         return new CrearFeriaService(feriaRepositoryPort);
     }
-        @Bean
+    
+    @Bean
     public IniciarSesionUseCase iniciarSesionUseCase(ArtesanoRepositoryPort artesanoRepositoryPort,
-                                                       AdministradorRepositoryPort administradorRepositoryPort,
-                                                       PasswordEncoder passwordEncoder,
-                                                       JwtService jwtService) {
+                                                    AdministradorRepositoryPort administradorRepositoryPort,
+                                                    PasswordEncoder passwordEncoder,
+                                                    JwtService jwtService) {
         return new IniciarSesionService(artesanoRepositoryPort, administradorRepositoryPort, passwordEncoder, jwtService);
+    }
+
+    @Bean
+    public ConsultarProductosUseCase consultarProductosUseCase(ProductoRepositoryPort productoRepositoryPort) {
+        return new ConsultarProductosService(productoRepositoryPort);
     }
 
     @Bean
@@ -69,5 +84,20 @@ public class UseCaseConfig {
     @Bean
     public ConsultarEdicionesFeriaUseCase consultarEdicionesFeriaUseCase(EdicionFeriaRepositoryPort edicionFeriaRepositoryPort) {
         return new ConsultarEdicionesFeriaService(edicionFeriaRepositoryPort);
+    }
+
+    @Bean
+    public RegistrarProductoUseCase registrarProductoUseCase(ProductoRepositoryPort productoRepositoryPort) {
+        return new RegistrarProductoService(productoRepositoryPort);
+    }
+
+    @Bean
+    public ActualizarProductoUseCase actualizarProductoUseCase(ProductoRepositoryPort productoRepositoryPort) {
+        return new ActualizarProductoService(productoRepositoryPort);
+    }
+
+    @Bean
+    public EliminarProductoUseCase eliminarProductoUseCase(ProductoRepositoryPort productoRepositoryPort) {
+        return new EliminarProductoService(productoRepositoryPort);
     }
 }

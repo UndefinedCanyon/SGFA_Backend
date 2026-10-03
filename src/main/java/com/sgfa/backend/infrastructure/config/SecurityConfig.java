@@ -60,6 +60,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/ferias").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.POST, "/api/edicionesferia").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.POST, "/api/lugares").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST, "/api/productos").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/productos").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/productos/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/productos/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

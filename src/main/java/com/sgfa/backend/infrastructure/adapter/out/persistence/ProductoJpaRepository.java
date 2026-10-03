@@ -1,0 +1,10 @@
+package com.sgfa.backend.infrastructure.adapter.out.persistence;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface ProductoJpaRepository extends JpaRepository<ProductoEntity, Long> {
+
+    List<ProductoEntity> findByArtesanoId(Long idArtesano);
+}
