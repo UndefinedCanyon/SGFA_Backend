@@ -1,5 +1,14 @@
 package com.sgfa.backend.infrastructure.config;
 
+import com.sgfa.backend.application.port.in.SolicitarParticipacionUseCase;
+import com.sgfa.backend.application.port.in.AprobarSolicitudUseCase;
+import com.sgfa.backend.application.port.in.RechazarSolicitudUseCase;
+import com.sgfa.backend.application.port.in.ConsultarSolicitudesUseCase;
+import com.sgfa.backend.application.port.out.InscripcionRepositoryPort;
+import com.sgfa.backend.application.usecase.SolicitarParticipacionService;
+import com.sgfa.backend.application.usecase.AprobarSolicitudService;
+import com.sgfa.backend.application.usecase.RechazarSolicitudService;
+import com.sgfa.backend.application.usecase.ConsultarSolicitudesService;
 import com.sgfa.backend.application.port.in.ConsultarProductosUseCase;
 import com.sgfa.backend.application.usecase.ConsultarProductosService;
 import com.sgfa.backend.application.port.in.RegistrarProductoUseCase;
@@ -99,5 +108,25 @@ public class UseCaseConfig {
     @Bean
     public EliminarProductoUseCase eliminarProductoUseCase(ProductoRepositoryPort productoRepositoryPort) {
         return new EliminarProductoService(productoRepositoryPort);
+    }
+
+    @Bean
+    public SolicitarParticipacionUseCase solicitarParticipacionUseCase(InscripcionRepositoryPort inscripcionRepositoryPort) {
+        return new SolicitarParticipacionService(inscripcionRepositoryPort);
+    }
+
+    @Bean
+    public AprobarSolicitudUseCase aprobarSolicitudUseCase(InscripcionRepositoryPort inscripcionRepositoryPort) {
+        return new AprobarSolicitudService(inscripcionRepositoryPort);
+    }
+
+    @Bean
+    public RechazarSolicitudUseCase rechazarSolicitudUseCase(InscripcionRepositoryPort inscripcionRepositoryPort) {
+        return new RechazarSolicitudService(inscripcionRepositoryPort);
+    }
+
+    @Bean
+    public ConsultarSolicitudesUseCase consultarSolicitudesUseCase(InscripcionRepositoryPort inscripcionRepositoryPort) {
+        return new ConsultarSolicitudesService(inscripcionRepositoryPort);
     }
 }

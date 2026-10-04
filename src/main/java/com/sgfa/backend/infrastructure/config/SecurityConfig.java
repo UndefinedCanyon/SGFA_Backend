@@ -64,6 +64,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/productos").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/productos/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/productos/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/inscripciones").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/inscripciones/mias").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/inscripciones").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/inscripciones/**").hasRole("ADMINISTRADOR")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
