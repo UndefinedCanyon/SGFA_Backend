@@ -16,7 +16,7 @@ public class CrearEdicionFeriaService implements CrearEdicionFeriaUseCase {
 
     @Override
     public EdicionFeria crear(Long idFeria, Long idLugar, LocalDate fechaInicio, LocalDate fechaFin) {
-        EdicionFeria nuevaEdicion = new EdicionFeria(null, idFeria, idLugar, fechaInicio, fechaFin);
+        EdicionFeria nuevaEdicion = new EdicionFeria(null, idFeria, idLugar, fechaInicio, fechaFin, true);
         return edicionFeriaRepositoryPort.guardar(nuevaEdicion);
     }
 }

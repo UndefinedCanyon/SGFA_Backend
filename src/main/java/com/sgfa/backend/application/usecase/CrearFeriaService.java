@@ -14,7 +14,7 @@ public class CrearFeriaService implements CrearFeriaUseCase {
 
     @Override
     public Feria crear(String nombreFeria, Long idAdmin) {
-        Feria nuevaFeria = new Feria(null, nombreFeria, idAdmin);
+        Feria nuevaFeria = new Feria(null, nombreFeria, idAdmin, true);
         return feriaRepositoryPort.guardar(nuevaFeria);
     }
 }

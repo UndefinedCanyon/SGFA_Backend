@@ -37,7 +37,7 @@ public class RegistrarArtesanoService implements RegistrarArtesanoUseCase {
         String contrasenaCifrada = passwordEncoder.encode(contrasena);
 
         Artesano nuevoArtesano = new Artesano(null, nombre, correoElectronico, contrasenaCifrada,
-                cc, telefono, nombreEmprendimiento, descripcionCorta);
+        cc, telefono, nombreEmprendimiento, descripcionCorta, true);
 
         return artesanoRepositoryPort.guardar(nuevoArtesano);
     }

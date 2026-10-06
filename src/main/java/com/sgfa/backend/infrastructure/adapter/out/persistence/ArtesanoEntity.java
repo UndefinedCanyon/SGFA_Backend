@@ -32,11 +32,15 @@ public class ArtesanoEntity {
     @Column(name = "descripcion_corta")
     private String descripcionCorta;
 
+    @Column(name = "activo", nullable = false)
+    private boolean activo;
+
     public ArtesanoEntity() {
     }
 
     public ArtesanoEntity(Long id, String nombre, String correoElectronico, String contrasena,
-                           String cc, String telefono, String nombreEmprendimiento, String descripcionCorta) {
+                           String cc, String telefono, String nombreEmprendimiento, String descripcionCorta,
+                           boolean activo) {
         this.id = id;
         this.nombre = nombre;
         this.correoElectronico = correoElectronico;
@@ -45,6 +49,11 @@ public class ArtesanoEntity {
         this.telefono = telefono;
         this.nombreEmprendimiento = nombreEmprendimiento;
         this.descripcionCorta = descripcionCorta;
+        this.activo = activo;
+    }
+
+    public boolean isActivo() {
+        return activo;
     }
 
     public Long getId() {

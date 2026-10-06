@@ -10,9 +10,11 @@ public class Artesano {
     private String telefono;
     private String nombreEmprendimiento;
     private String descripcionCorta;
+    private boolean activo;
 
     public Artesano(Long id, String nombre, String correoElectronico, String contrasena,
-                     String cc, String telefono, String nombreEmprendimiento, String descripcionCorta) {
+                     String cc, String telefono, String nombreEmprendimiento, String descripcionCorta,
+                     boolean activo) {
         this.id = id;
         this.nombre = nombre;
         this.correoElectronico = correoElectronico;
@@ -21,6 +23,7 @@ public class Artesano {
         this.telefono = telefono;
         this.nombreEmprendimiento = nombreEmprendimiento;
         this.descripcionCorta = descripcionCorta;
+        this.activo = activo;
     }
 
     public Long getId() {
@@ -55,6 +58,10 @@ public class Artesano {
         return descripcionCorta;
     }
 
+    public boolean isActivo() {
+        return activo;
+    }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
@@ -69,5 +76,9 @@ public class Artesano {
 
     public void setDescripcionCorta(String descripcionCorta) {
         this.descripcionCorta = descripcionCorta;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 }

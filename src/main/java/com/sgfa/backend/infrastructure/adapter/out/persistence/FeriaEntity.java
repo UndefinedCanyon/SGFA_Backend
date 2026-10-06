@@ -17,13 +17,21 @@ public class FeriaEntity {
     @Column(name = "id_admin", nullable = false)
     private Long idAdmin;
 
+    @Column(name = "activo", nullable = false)
+    private boolean activo;
+
     public FeriaEntity() {
     }
 
-    public FeriaEntity(Long id, String nombreFeria, Long idAdmin) {
+    public FeriaEntity(Long id, String nombreFeria, Long idAdmin, boolean activo) {
         this.id = id;
         this.nombreFeria = nombreFeria;
         this.idAdmin = idAdmin;
+        this.activo = activo;
+    }
+
+    public boolean isActivo() {
+        return activo;
     }
 
     public Long getId() {

@@ -19,7 +19,7 @@ public class FeriaRepositoryAdapter implements FeriaRepositoryPort {
 
     @Override
     public Feria guardar(Feria feria) {
-        FeriaEntity entity = new FeriaEntity(feria.getId(), feria.getNombreFeria(), feria.getIdAdmin());
+        FeriaEntity entity = new FeriaEntity(feria.getId(), feria.getNombreFeria(), feria.getIdAdmin(), feria.isActivo());
         FeriaEntity guardada = feriaJpaRepository.save(entity);
         return aDominio(guardada);
     }
@@ -34,11 +34,21 @@ public class FeriaRepositoryAdapter implements FeriaRepositoryPort {
     public List<Feria> listarTodas() {
         return feriaJpaRepository.findAll()
                 .stream()
+                .filter(FeriaEntity::isActivo)
                 .map(this::aDominio)
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void cambiarEstadoActivo(Long id, boolean activo) {
+        FeriaEntity entity = feriaJpaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("La feria no existe."));
+
+        FeriaEntity actualizada = new FeriaEntity(entity.getId(), entity.getNombreFeria(), entity.getIdAdmin(), activo);
+        feriaJpaRepository.save(actualizada);
+    }
+
     private Feria aDominio(FeriaEntity entity) {
-        return new Feria(entity.getId(), entity.getNombreFeria(), entity.getIdAdmin());
+        return new Feria(entity.getId(), entity.getNombreFeria(), entity.getIdAdmin(), entity.isActivo());
     }
 }

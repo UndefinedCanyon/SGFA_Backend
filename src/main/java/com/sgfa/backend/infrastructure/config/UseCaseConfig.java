@@ -1,5 +1,11 @@
 package com.sgfa.backend.infrastructure.config;
 
+import com.sgfa.backend.application.port.in.CambiarEstadoArtesanoUseCase;
+import com.sgfa.backend.application.port.in.CambiarEstadoFeriaUseCase;
+import com.sgfa.backend.application.port.in.CambiarEstadoEdicionFeriaUseCase;
+import com.sgfa.backend.application.usecase.CambiarEstadoArtesanoService;
+import com.sgfa.backend.application.usecase.CambiarEstadoFeriaService;
+import com.sgfa.backend.application.usecase.CambiarEstadoEdicionFeriaService;
 import com.sgfa.backend.application.port.in.SolicitarParticipacionUseCase;
 import com.sgfa.backend.application.port.in.AprobarSolicitudUseCase;
 import com.sgfa.backend.application.port.in.RechazarSolicitudUseCase;
@@ -128,5 +134,20 @@ public class UseCaseConfig {
     @Bean
     public ConsultarSolicitudesUseCase consultarSolicitudesUseCase(InscripcionRepositoryPort inscripcionRepositoryPort) {
         return new ConsultarSolicitudesService(inscripcionRepositoryPort);
+    }
+
+    @Bean
+    public CambiarEstadoArtesanoUseCase cambiarEstadoArtesanoUseCase(ArtesanoRepositoryPort artesanoRepositoryPort) {
+        return new CambiarEstadoArtesanoService(artesanoRepositoryPort);
+    }
+
+    @Bean
+    public CambiarEstadoFeriaUseCase cambiarEstadoFeriaUseCase(FeriaRepositoryPort feriaRepositoryPort) {
+        return new CambiarEstadoFeriaService(feriaRepositoryPort);
+    }
+
+    @Bean
+    public CambiarEstadoEdicionFeriaUseCase cambiarEstadoEdicionFeriaUseCase(EdicionFeriaRepositoryPort edicionFeriaRepositoryPort) {
+        return new CambiarEstadoEdicionFeriaService(edicionFeriaRepositoryPort);
     }
 }

@@ -9,13 +9,15 @@ public class EdicionFeria {
     private Long idLugar;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
+    private boolean activo;
 
-    public EdicionFeria(Long id, Long idFeria, Long idLugar, LocalDate fechaInicio, LocalDate fechaFin) {
+    public EdicionFeria(Long id, Long idFeria, Long idLugar, LocalDate fechaInicio, LocalDate fechaFin, boolean activo) {
         this.id = id;
         this.idFeria = idFeria;
         this.idLugar = idLugar;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
+        this.activo = activo;
     }
 
     public Long getId() {
@@ -36,5 +38,13 @@ public class EdicionFeria {
 
     public LocalDate getFechaFin() {
         return fechaFin;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 }

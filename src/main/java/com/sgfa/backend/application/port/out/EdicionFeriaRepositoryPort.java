@@ -14,4 +14,6 @@ public interface EdicionFeriaRepositoryPort {
     List<EdicionFeria> listarTodas();
 
     List<EdicionFeria> listarPorFeria(Long idFeria);
+
+    void cambiarEstadoActivo(Long id, boolean activo);
 }

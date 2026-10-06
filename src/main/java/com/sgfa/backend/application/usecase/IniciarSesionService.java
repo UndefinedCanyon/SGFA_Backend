@@ -36,6 +36,11 @@ public class IniciarSesionService implements IniciarSesionUseCase {
 
         if (artesanoEncontrado.isPresent()) {
             Artesano artesano = artesanoEncontrado.get();
+
+            if (!artesano.isActivo()) {
+                throw new CredencialesInvalidasException("Correo o contraseña incorrectos.");
+            }
+
             if (!passwordEncoder.matches(contrasena, artesano.getContrasena())) {
                 throw new CredencialesInvalidasException("Correo o contraseña incorrectos.");
             }

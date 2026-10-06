@@ -36,7 +36,8 @@ public class EdicionFeriaRepositoryAdapter implements EdicionFeriaRepositoryPort
                 feria,
                 lugar,
                 edicionFeria.getFechaInicio(),
-                edicionFeria.getFechaFin()
+                edicionFeria.getFechaFin(),
+                edicionFeria.isActivo()
         );
 
         EdicionFeriaEntity guardada = edicionFeriaJpaRepository.save(entity);
@@ -53,6 +54,7 @@ public class EdicionFeriaRepositoryAdapter implements EdicionFeriaRepositoryPort
     public List<EdicionFeria> listarTodas() {
         return edicionFeriaJpaRepository.findAll()
                 .stream()
+                .filter(EdicionFeriaEntity::isActivo)
                 .map(this::aDominio)
                 .collect(Collectors.toList());
     }
@@ -61,8 +63,26 @@ public class EdicionFeriaRepositoryAdapter implements EdicionFeriaRepositoryPort
     public List<EdicionFeria> listarPorFeria(Long idFeria) {
         return edicionFeriaJpaRepository.findByFeriaId(idFeria)
                 .stream()
+                .filter(EdicionFeriaEntity::isActivo)
                 .map(this::aDominio)
                 .collect(Collectors.toList());
+    }
+
+        @Override
+    public void cambiarEstadoActivo(Long id, boolean activo) {
+        EdicionFeriaEntity entity = edicionFeriaJpaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("La edición no existe."));
+
+        EdicionFeriaEntity actualizada = new EdicionFeriaEntity(
+                entity.getId(),
+                entity.getFeria(),
+                entity.getLugar(),
+                entity.getFechaInicio(),
+                entity.getFechaFin(),
+                activo
+        );
+
+        edicionFeriaJpaRepository.save(actualizada);
     }
 
     private EdicionFeria aDominio(EdicionFeriaEntity entity) {
@@ -71,7 +91,8 @@ public class EdicionFeriaRepositoryAdapter implements EdicionFeriaRepositoryPort
                 entity.getFeria().getId(),
                 entity.getLugar().getId(),
                 entity.getFechaInicio(),
-                entity.getFechaFin()
+                entity.getFechaFin(),
+                entity.isActivo()
         );
     }
 }

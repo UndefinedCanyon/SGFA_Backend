@@ -68,6 +68,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/inscripciones/mias").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/inscripciones").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.PUT, "/api/inscripciones/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/artesanos/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/ferias/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/edicionesferia/**").hasRole("ADMINISTRADOR") 
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

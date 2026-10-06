@@ -18,4 +18,6 @@ public interface ArtesanoRepositoryPort {
     boolean existePorCorreo(String correoElectronico);
 
     boolean existePorCc(String cc);
+
+    void cambiarEstadoActivo(Long id, boolean activo);
 }

@@ -27,16 +27,24 @@ public class EdicionFeriaEntity {
     @Column(name = "fecha_fin", nullable = false)
     private LocalDate fechaFin;
 
+    @Column(name = "activo", nullable = false)
+    private boolean activo;
+
     public EdicionFeriaEntity() {
     }
 
     public EdicionFeriaEntity(Long id, FeriaEntity feria, LugarEntity lugar,
-                               LocalDate fechaInicio, LocalDate fechaFin) {
+                               LocalDate fechaInicio, LocalDate fechaFin, boolean activo) {
         this.id = id;
         this.feria = feria;
         this.lugar = lugar;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
+        this.activo = activo;
+    }
+
+    public boolean isActivo() {
+        return activo;
     }
 
     public Long getId() {

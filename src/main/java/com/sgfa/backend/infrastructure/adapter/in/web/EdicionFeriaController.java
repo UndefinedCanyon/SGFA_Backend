@@ -4,7 +4,7 @@ import com.sgfa.backend.application.port.in.CrearEdicionFeriaUseCase;
 import com.sgfa.backend.application.port.in.ConsultarEdicionesFeriaUseCase;
 import com.sgfa.backend.domain.model.EdicionFeria;
 import org.springframework.web.bind.annotation.*;
-
+import com.sgfa.backend.application.port.in.CambiarEstadoEdicionFeriaUseCase;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -15,11 +15,19 @@ public class EdicionFeriaController {
 
     private final CrearEdicionFeriaUseCase crearEdicionFeriaUseCase;
     private final ConsultarEdicionesFeriaUseCase consultarEdicionesFeriaUseCase;
+    private final CambiarEstadoEdicionFeriaUseCase cambiarEstadoEdicionFeriaUseCase;
 
     public EdicionFeriaController(CrearEdicionFeriaUseCase crearEdicionFeriaUseCase,
-                                   ConsultarEdicionesFeriaUseCase consultarEdicionesFeriaUseCase) {
+                                   ConsultarEdicionesFeriaUseCase consultarEdicionesFeriaUseCase,
+                                   CambiarEstadoEdicionFeriaUseCase cambiarEstadoEdicionFeriaUseCase) {
         this.crearEdicionFeriaUseCase = crearEdicionFeriaUseCase;
         this.consultarEdicionesFeriaUseCase = consultarEdicionesFeriaUseCase;
+        this.cambiarEstadoEdicionFeriaUseCase = cambiarEstadoEdicionFeriaUseCase;
+    }
+
+    @PutMapping("/{id}/estado")
+    public void cambiarEstado(@PathVariable Long id, @RequestBody Map<String, Boolean> body) {
+        cambiarEstadoEdicionFeriaUseCase.cambiarEstado(id, body.get("activo"));
     }
 
     @PostMapping

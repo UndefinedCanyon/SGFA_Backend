@@ -1,5 +1,6 @@
 package com.sgfa.backend.infrastructure.adapter.in.web;
 
+import com.sgfa.backend.application.port.in.CambiarEstadoFeriaUseCase;
 import com.sgfa.backend.application.port.in.CrearFeriaUseCase;
 import com.sgfa.backend.application.port.in.ConsultarFeriasUseCase;
 import com.sgfa.backend.domain.model.Feria;
@@ -14,11 +15,19 @@ public class FeriaController {
 
     private final CrearFeriaUseCase crearFeriaUseCase;
     private final ConsultarFeriasUseCase consultarFeriasUseCase;
+    private final CambiarEstadoFeriaUseCase cambiarEstadoFeriaUseCase;
 
     public FeriaController(CrearFeriaUseCase crearFeriaUseCase,
-                            ConsultarFeriasUseCase consultarFeriasUseCase) {
+                            ConsultarFeriasUseCase consultarFeriasUseCase,
+                            CambiarEstadoFeriaUseCase cambiarEstadoFeriaUseCase) {
         this.crearFeriaUseCase = crearFeriaUseCase;
         this.consultarFeriasUseCase = consultarFeriasUseCase;
+        this.cambiarEstadoFeriaUseCase = cambiarEstadoFeriaUseCase;
+    }
+
+    @PutMapping("/{id}/estado")
+    public void cambiarEstado(@PathVariable Long id, @RequestBody Map<String, Boolean> body) {
+        cambiarEstadoFeriaUseCase.cambiarEstado(id, body.get("activo"));
     }
 
     @PostMapping
