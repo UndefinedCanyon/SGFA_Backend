@@ -71,6 +71,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/artesanos/**").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.PUT, "/api/ferias/**").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.PUT, "/api/edicionesferia/**").hasRole("ADMINISTRADOR") 
+                        .requestMatchers(HttpMethod.GET, "/api/artesanos").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.GET, "/api/ferias/todas").hasRole("ADMINISTRADOR")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

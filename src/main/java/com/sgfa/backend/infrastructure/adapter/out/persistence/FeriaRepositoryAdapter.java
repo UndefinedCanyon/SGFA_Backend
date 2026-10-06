@@ -48,6 +48,14 @@ public class FeriaRepositoryAdapter implements FeriaRepositoryPort {
         feriaJpaRepository.save(actualizada);
     }
 
+    @Override
+    public List<Feria> listarTodasIncluyendoInactivas() {
+        return feriaJpaRepository.findAll()
+                .stream()
+                .map(this::aDominio)
+                .collect(Collectors.toList());
+    }
+
     private Feria aDominio(FeriaEntity entity) {
         return new Feria(entity.getId(), entity.getNombreFeria(), entity.getIdAdmin(), entity.isActivo());
     }

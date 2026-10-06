@@ -1,5 +1,7 @@
 package com.sgfa.backend.infrastructure.adapter.in.web;
 
+import com.sgfa.backend.application.port.in.ConsultarArtesanosUseCase;
+import java.util.List;
 import com.sgfa.backend.application.exception.DatoDuplicadoException;
 import com.sgfa.backend.application.port.in.CambiarEstadoArtesanoUseCase;
 import com.sgfa.backend.application.port.in.RegistrarArtesanoUseCase;
@@ -15,11 +17,19 @@ public class ArtesanoController {
 
     private final RegistrarArtesanoUseCase registrarArtesanoUseCase;
     private final CambiarEstadoArtesanoUseCase cambiarEstadoArtesanoUseCase;
+    private final ConsultarArtesanosUseCase consultarArtesanosUseCase;
 
     public ArtesanoController(RegistrarArtesanoUseCase registrarArtesanoUseCase,
-                               CambiarEstadoArtesanoUseCase cambiarEstadoArtesanoUseCase) {
+                               CambiarEstadoArtesanoUseCase cambiarEstadoArtesanoUseCase,
+                               ConsultarArtesanosUseCase consultarArtesanosUseCase) {
         this.registrarArtesanoUseCase = registrarArtesanoUseCase;
         this.cambiarEstadoArtesanoUseCase = cambiarEstadoArtesanoUseCase;
+        this.consultarArtesanosUseCase = consultarArtesanosUseCase;
+    }
+
+    @GetMapping
+    public List<Artesano> listarTodos() {
+        return consultarArtesanosUseCase.consultarTodos();
     }
 
     @PostMapping

@@ -37,8 +37,8 @@ public class FeriaController {
         return crearFeriaUseCase.crear(nombreFeria, idAdmin);
     }
 
-    @GetMapping
-    public List<Feria> listar() {
-        return consultarFeriasUseCase.consultarTodas();
+    @GetMapping("/todas")
+    public List<Feria> listarTodasIncluyendoInactivas() {
+        return consultarFeriasUseCase.consultarTodasIncluyendoInactivas();
     }
 }

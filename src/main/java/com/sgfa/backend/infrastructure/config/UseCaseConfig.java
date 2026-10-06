@@ -1,5 +1,7 @@
 package com.sgfa.backend.infrastructure.config;
 
+import com.sgfa.backend.application.port.in.ConsultarArtesanosUseCase;
+import com.sgfa.backend.application.usecase.ConsultarArtesanosService;
 import com.sgfa.backend.application.port.in.CambiarEstadoArtesanoUseCase;
 import com.sgfa.backend.application.port.in.CambiarEstadoFeriaUseCase;
 import com.sgfa.backend.application.port.in.CambiarEstadoEdicionFeriaUseCase;
@@ -149,5 +151,10 @@ public class UseCaseConfig {
     @Bean
     public CambiarEstadoEdicionFeriaUseCase cambiarEstadoEdicionFeriaUseCase(EdicionFeriaRepositoryPort edicionFeriaRepositoryPort) {
         return new CambiarEstadoEdicionFeriaService(edicionFeriaRepositoryPort);
+    }
+    
+    @Bean
+    public ConsultarArtesanosUseCase consultarArtesanosUseCase(ArtesanoRepositoryPort artesanoRepositoryPort) {
+        return new ConsultarArtesanosService(artesanoRepositoryPort);
     }
 }

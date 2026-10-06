@@ -12,6 +12,7 @@ public interface FeriaRepositoryPort {
     Optional<Feria> buscarPorId(Long id);
 
     List<Feria> listarTodas();
+    List<Feria> listarTodasIncluyendoInactivas();
 
     void cambiarEstadoActivo(Long id, boolean activo);
 }

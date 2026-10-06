@@ -18,4 +18,9 @@ public class ConsultarFeriasService implements ConsultarFeriasUseCase {
     public List<Feria> consultarTodas() {
         return feriaRepositoryPort.listarTodas();
     }
+    
+    @Override
+    public List<Feria> consultarTodasIncluyendoInactivas() {
+        return feriaRepositoryPort.listarTodasIncluyendoInactivas();
+    }
 }
