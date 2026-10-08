@@ -51,6 +51,8 @@ import com.sgfa.backend.application.usecase.IniciarSesionService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import com.sgfa.backend.application.port.in.ConsultarParticipantesEdicionUseCase;
+import com.sgfa.backend.application.usecase.ConsultarParticipantesEdicionService;
 
 @Configuration
 public class UseCaseConfig {
@@ -156,5 +158,16 @@ public class UseCaseConfig {
     @Bean
     public ConsultarArtesanosUseCase consultarArtesanosUseCase(ArtesanoRepositoryPort artesanoRepositoryPort) {
         return new ConsultarArtesanosService(artesanoRepositoryPort);
+    }
+
+    @Bean
+    public ConsultarParticipantesEdicionUseCase consultarParticipantesEdicionUseCase(
+            InscripcionRepositoryPort inscripcionRepositoryPort,
+            ArtesanoRepositoryPort artesanoRepositoryPort,
+            ProductoRepositoryPort productoRepositoryPort,
+            EdicionFeriaRepositoryPort edicionFeriaRepositoryPort) {
+        return new ConsultarParticipantesEdicionService(
+                inscripcionRepositoryPort, artesanoRepositoryPort,
+                productoRepositoryPort, edicionFeriaRepositoryPort);
     }
 }

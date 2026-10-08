@@ -2,8 +2,10 @@ package com.sgfa.backend.infrastructure.adapter.in.web;
 
 import com.sgfa.backend.application.port.in.CambiarEstadoEdicionFeriaUseCase;
 import com.sgfa.backend.application.port.in.ConsultarEdicionesFeriaUseCase;
+import com.sgfa.backend.application.port.in.ConsultarParticipantesEdicionUseCase;
 import com.sgfa.backend.application.port.in.CrearEdicionFeriaUseCase;
 import com.sgfa.backend.domain.model.EdicionFeria;
+import com.sgfa.backend.domain.model.ParticipantePublico;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +20,16 @@ public class EdicionFeriaController {
     private final CrearEdicionFeriaUseCase crearEdicionFeriaUseCase;
     private final ConsultarEdicionesFeriaUseCase consultarEdicionesFeriaUseCase;
     private final CambiarEstadoEdicionFeriaUseCase cambiarEstadoEdicionFeriaUseCase;
+    private final ConsultarParticipantesEdicionUseCase consultarParticipantesEdicionUseCase;
 
     public EdicionFeriaController(CrearEdicionFeriaUseCase crearEdicionFeriaUseCase,
                                    ConsultarEdicionesFeriaUseCase consultarEdicionesFeriaUseCase,
-                                   CambiarEstadoEdicionFeriaUseCase cambiarEstadoEdicionFeriaUseCase) {
+                                   CambiarEstadoEdicionFeriaUseCase cambiarEstadoEdicionFeriaUseCase,
+                                   ConsultarParticipantesEdicionUseCase consultarParticipantesEdicionUseCase) {
         this.crearEdicionFeriaUseCase = crearEdicionFeriaUseCase;
         this.consultarEdicionesFeriaUseCase = consultarEdicionesFeriaUseCase;
         this.cambiarEstadoEdicionFeriaUseCase = cambiarEstadoEdicionFeriaUseCase;
+        this.consultarParticipantesEdicionUseCase = consultarParticipantesEdicionUseCase;
     }
 
     @PostMapping
@@ -47,6 +52,11 @@ public class EdicionFeriaController {
     @GetMapping("/todas")
     public List<EdicionFeria> listarTodasIncluyendoInactivas() {
         return consultarEdicionesFeriaUseCase.consultarTodasIncluyendoInactivas();
+    }
+
+    @GetMapping("/{id}/participantes")
+    public List<ParticipantePublico> participantes(@PathVariable Long id) {
+        return consultarParticipantesEdicionUseCase.consultar(id);
     }
 
     @PutMapping("/{id}/estado")

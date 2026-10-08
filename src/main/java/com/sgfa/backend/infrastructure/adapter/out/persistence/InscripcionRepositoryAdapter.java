@@ -70,6 +70,14 @@ public class InscripcionRepositoryAdapter implements InscripcionRepositoryPort {
         return inscripcionJpaRepository.existsByArtesanoIdAndEdicionFeriaId(idArtesano, idEdicionFeria);
     }
 
+    @Override
+    public List<Inscripcion> listarAprobadasPorEdicion(Long idEdicionFeria) {
+        return inscripcionJpaRepository.findByEdicionFeriaIdAndEstado(idEdicionFeria, "APROBADA")
+                .stream()
+                .map(this::aDominio)
+                .collect(Collectors.toList());
+    }
+
     private Inscripcion aDominio(InscripcionEntity entity) {
         return new Inscripcion(
                 entity.getId(),

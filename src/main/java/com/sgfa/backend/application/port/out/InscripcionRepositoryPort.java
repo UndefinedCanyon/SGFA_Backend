@@ -15,5 +15,7 @@ public interface InscripcionRepositoryPort {
 
     List<Inscripcion> listarTodas();
 
+    List<Inscripcion> listarAprobadasPorEdicion(Long idEdicionFeria);
+
     boolean existeInscripcion(Long idArtesano, Long idEdicionFeria);
 }

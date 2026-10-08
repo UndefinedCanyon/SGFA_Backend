@@ -8,5 +8,7 @@ public interface InscripcionJpaRepository extends JpaRepository<InscripcionEntit
 
     List<InscripcionEntity> findByArtesanoId(Long idArtesano);
 
+    List<InscripcionEntity> findByEdicionFeriaIdAndEstado(Long idEdicionFeria, String estado);
+
     boolean existsByArtesanoIdAndEdicionFeriaId(Long idArtesano, Long idEdicionFeria);
 }
