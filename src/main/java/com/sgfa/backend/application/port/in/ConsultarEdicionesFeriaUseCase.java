@@ -8,5 +8,7 @@ public interface ConsultarEdicionesFeriaUseCase {
 
     List<EdicionFeria> consultarTodas();
 
+    List<EdicionFeria> consultarTodasIncluyendoInactivas();
+
     List<EdicionFeria> consultarPorFeria(Long idFeria);
 }

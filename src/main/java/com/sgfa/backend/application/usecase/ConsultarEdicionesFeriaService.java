@@ -20,6 +20,11 @@ public class ConsultarEdicionesFeriaService implements ConsultarEdicionesFeriaUs
     }
 
     @Override
+    public List<EdicionFeria> consultarTodasIncluyendoInactivas() {
+        return edicionFeriaRepositoryPort.listarTodasIncluyendoInactivas();
+    }
+
+    @Override
     public List<EdicionFeria> consultarPorFeria(Long idFeria) {
         return edicionFeriaRepositoryPort.listarPorFeria(idFeria);
     }

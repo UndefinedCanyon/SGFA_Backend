@@ -68,7 +68,15 @@ public class EdicionFeriaRepositoryAdapter implements EdicionFeriaRepositoryPort
                 .collect(Collectors.toList());
     }
 
-        @Override
+    @Override
+    public List<EdicionFeria> listarTodasIncluyendoInactivas() {
+        return edicionFeriaJpaRepository.findAll()
+                .stream()
+                .map(this::aDominio)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void cambiarEstadoActivo(Long id, boolean activo) {
         EdicionFeriaEntity entity = edicionFeriaJpaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("La edición no existe."));
