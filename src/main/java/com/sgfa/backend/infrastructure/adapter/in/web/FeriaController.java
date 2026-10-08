@@ -1,8 +1,8 @@
 package com.sgfa.backend.infrastructure.adapter.in.web;
 
 import com.sgfa.backend.application.port.in.CambiarEstadoFeriaUseCase;
-import com.sgfa.backend.application.port.in.CrearFeriaUseCase;
 import com.sgfa.backend.application.port.in.ConsultarFeriasUseCase;
+import com.sgfa.backend.application.port.in.CrearFeriaUseCase;
 import com.sgfa.backend.domain.model.Feria;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,11 +25,6 @@ public class FeriaController {
         this.cambiarEstadoFeriaUseCase = cambiarEstadoFeriaUseCase;
     }
 
-    @PutMapping("/{id}/estado")
-    public void cambiarEstado(@PathVariable Long id, @RequestBody Map<String, Boolean> body) {
-        cambiarEstadoFeriaUseCase.cambiarEstado(id, body.get("activo"));
-    }
-
     @PostMapping
     public Feria crear(@RequestBody Map<String, Object> body) {
         String nombreFeria = (String) body.get("nombreFeria");
@@ -37,8 +32,18 @@ public class FeriaController {
         return crearFeriaUseCase.crear(nombreFeria, idAdmin);
     }
 
+    @GetMapping
+    public List<Feria> listar() {
+        return consultarFeriasUseCase.consultarTodas();
+    }
+
     @GetMapping("/todas")
     public List<Feria> listarTodasIncluyendoInactivas() {
         return consultarFeriasUseCase.consultarTodasIncluyendoInactivas();
+    }
+
+    @PutMapping("/{id}/estado")
+    public void cambiarEstado(@PathVariable Long id, @RequestBody Map<String, Boolean> body) {
+        cambiarEstadoFeriaUseCase.cambiarEstado(id, body.get("activo"));
     }
 }
