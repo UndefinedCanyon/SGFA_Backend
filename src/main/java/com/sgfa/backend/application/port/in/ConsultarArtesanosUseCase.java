@@ -7,4 +7,6 @@ import java.util.List;
 public interface ConsultarArtesanosUseCase {
 
     List<Artesano> consultarTodos();
+
+    Artesano consultarPorId(Long id);
 }

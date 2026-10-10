@@ -1,5 +1,7 @@
 package com.sgfa.backend.infrastructure.config;
 
+import com.sgfa.backend.application.port.in.ActualizarPerfilArtesanoUseCase;
+import com.sgfa.backend.application.usecase.ActualizarPerfilArtesanoService;
 import com.sgfa.backend.application.port.in.ConsultarArtesanosUseCase;
 import com.sgfa.backend.application.usecase.ConsultarArtesanosService;
 import com.sgfa.backend.application.port.in.CambiarEstadoArtesanoUseCase;
@@ -70,6 +72,11 @@ public class UseCaseConfig {
       @Bean
     public RegistrarArtesanoUseCase registrarArtesanoUseCase(ArtesanoRepositoryPort artesanoRepositoryPort,AdministradorRepositoryPort administradorRepositoryPort,PasswordEncoder passwordEncoder) {
         return new RegistrarArtesanoService(artesanoRepositoryPort, administradorRepositoryPort, passwordEncoder);
+    }
+
+    @Bean
+    public ActualizarPerfilArtesanoUseCase actualizarPerfilArtesanoUseCase(ArtesanoRepositoryPort artesanoRepositoryPort) {
+        return new ActualizarPerfilArtesanoService(artesanoRepositoryPort);
     }
 
     @Bean

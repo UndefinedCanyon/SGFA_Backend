@@ -18,4 +18,10 @@ public class ConsultarArtesanosService implements ConsultarArtesanosUseCase {
     public List<Artesano> consultarTodos() {
         return artesanoRepositoryPort.listarTodos();
     }
+
+    @Override
+    public Artesano consultarPorId(Long id) {
+        return artesanoRepositoryPort.buscarPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("El artesano no existe."));
+    }
 }
