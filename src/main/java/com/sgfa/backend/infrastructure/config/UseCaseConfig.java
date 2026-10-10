@@ -1,5 +1,7 @@
 package com.sgfa.backend.infrastructure.config;
 
+import com.sgfa.backend.application.port.in.ActualizarFeriaUseCase;
+import com.sgfa.backend.application.usecase.ActualizarFeriaService;
 import com.sgfa.backend.application.port.in.ActualizarPerfilArtesanoUseCase;
 import com.sgfa.backend.application.usecase.ActualizarPerfilArtesanoService;
 import com.sgfa.backend.application.port.in.ConsultarArtesanosUseCase;
@@ -165,6 +167,11 @@ public class UseCaseConfig {
     @Bean
     public ConsultarArtesanosUseCase consultarArtesanosUseCase(ArtesanoRepositoryPort artesanoRepositoryPort) {
         return new ConsultarArtesanosService(artesanoRepositoryPort);
+    }
+
+    @Bean
+    public ActualizarFeriaUseCase actualizarFeriaUseCase(FeriaRepositoryPort feriaRepositoryPort) {
+        return new ActualizarFeriaService(feriaRepositoryPort);
     }
 
     @Bean
