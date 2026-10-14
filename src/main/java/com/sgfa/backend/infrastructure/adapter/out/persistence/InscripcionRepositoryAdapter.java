@@ -78,6 +78,11 @@ public class InscripcionRepositoryAdapter implements InscripcionRepositoryPort {
                 .collect(Collectors.toList());
     }
 
+        @Override
+    public long contarAprobadasPorEdicion(Long idEdicionFeria) {
+        return inscripcionJpaRepository.countByEdicionFeriaIdAndEstado(idEdicionFeria, "APROBADA");
+    }
+
     private Inscripcion aDominio(InscripcionEntity entity) {
         return new Inscripcion(
                 entity.getId(),

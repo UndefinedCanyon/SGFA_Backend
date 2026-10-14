@@ -77,6 +77,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/ferias/todas").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.GET, "/api/edicionesferia/todas").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.PUT, "/api/ferias/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.GET, "/api/edicionesferia/*/ocupacion").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/edicionesferia/*/participantes").permitAll()
                         .anyRequest().authenticated()
                 )

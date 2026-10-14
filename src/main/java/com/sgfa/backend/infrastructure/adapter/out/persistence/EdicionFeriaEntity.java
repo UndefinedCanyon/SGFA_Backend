@@ -30,21 +30,22 @@ public class EdicionFeriaEntity {
     @Column(name = "activo", nullable = false)
     private boolean activo;
 
+    @Column(name = "cupo_maximo")
+    private Integer cupoMaximo;
+
     public EdicionFeriaEntity() {
     }
 
     public EdicionFeriaEntity(Long id, FeriaEntity feria, LugarEntity lugar,
-                               LocalDate fechaInicio, LocalDate fechaFin, boolean activo) {
+                               LocalDate fechaInicio, LocalDate fechaFin,
+                               boolean activo, Integer cupoMaximo) {
         this.id = id;
         this.feria = feria;
         this.lugar = lugar;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
         this.activo = activo;
-    }
-
-    public boolean isActivo() {
-        return activo;
+        this.cupoMaximo = cupoMaximo;
     }
 
     public Long getId() {
@@ -65,5 +66,13 @@ public class EdicionFeriaEntity {
 
     public LocalDate getFechaFin() {
         return fechaFin;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public Integer getCupoMaximo() {
+        return cupoMaximo;
     }
 }

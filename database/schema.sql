@@ -24,6 +24,7 @@ CREATE TABLE administrador (
 -- Tabla: artesano
 -- ---------------------------------------------------------
 CREATE TABLE artesano (
+    activo              BOOLEAN NOT NULL DEFAULT TRUE,
     id_artesano         BIGINT AUTO_INCREMENT PRIMARY KEY,
     nombre              VARCHAR(100)  NOT NULL,
     correo_electronico  VARCHAR(150)  NOT NULL,
@@ -49,6 +50,7 @@ CREATE TABLE lugar (
 -- Tabla: feria
 -- ---------------------------------------------------------
 CREATE TABLE feria (
+    activo              BOOLEAN NOT NULL DEFAULT TRUE,
     id_feria     BIGINT AUTO_INCREMENT PRIMARY KEY,
     nombre_feria VARCHAR(150) NOT NULL,
     id_admin     BIGINT NOT NULL,
@@ -60,6 +62,8 @@ CREATE TABLE feria (
 -- Tabla: edicion_feria
 -- ---------------------------------------------------------
 CREATE TABLE edicion_feria (
+	activo              BOOLEAN NOT NULL DEFAULT TRUE,
+	cupo_maximo     INT NULL,
     id_edicionferia BIGINT AUTO_INCREMENT PRIMARY KEY,
     id_feria        BIGINT NOT NULL,
     id_lugar        BIGINT NOT NULL,

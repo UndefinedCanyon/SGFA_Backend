@@ -1,5 +1,9 @@
 package com.sgfa.backend.infrastructure.config;
 
+import com.sgfa.backend.application.port.in.ConfigurarCupoEdicionUseCase;
+import com.sgfa.backend.application.port.in.ConsultarOcupacionEdicionUseCase;
+import com.sgfa.backend.application.usecase.ConfigurarCupoEdicionService;
+import com.sgfa.backend.application.usecase.ConsultarOcupacionEdicionService;
 import com.sgfa.backend.application.port.in.ActualizarFeriaUseCase;
 import com.sgfa.backend.application.usecase.ActualizarFeriaService;
 import com.sgfa.backend.application.port.in.ActualizarPerfilArtesanoUseCase;
@@ -135,8 +139,9 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public AprobarSolicitudUseCase aprobarSolicitudUseCase(InscripcionRepositoryPort inscripcionRepositoryPort) {
-        return new AprobarSolicitudService(inscripcionRepositoryPort);
+    public AprobarSolicitudUseCase aprobarSolicitudUseCase(InscripcionRepositoryPort inscripcionRepositoryPort,
+        EdicionFeriaRepositoryPort edicionFeriaRepositoryPort) {
+        return new AprobarSolicitudService(inscripcionRepositoryPort, edicionFeriaRepositoryPort);
     }
 
     @Bean
@@ -183,5 +188,17 @@ public class UseCaseConfig {
         return new ConsultarParticipantesEdicionService(
                 inscripcionRepositoryPort, artesanoRepositoryPort,
                 productoRepositoryPort, edicionFeriaRepositoryPort);
+    }
+
+    @Bean
+    public ConfigurarCupoEdicionUseCase configurarCupoEdicionUseCase(EdicionFeriaRepositoryPort edicionFeriaRepositoryPort,
+        InscripcionRepositoryPort inscripcionRepositoryPort) {
+        return new ConfigurarCupoEdicionService(edicionFeriaRepositoryPort, inscripcionRepositoryPort);
+    }
+
+    @Bean
+    public ConsultarOcupacionEdicionUseCase consultarOcupacionEdicionUseCase(EdicionFeriaRepositoryPort edicionFeriaRepositoryPort,
+        InscripcionRepositoryPort inscripcionRepositoryPort) {
+        return new ConsultarOcupacionEdicionService(edicionFeriaRepositoryPort, inscripcionRepositoryPort);
     }
 }

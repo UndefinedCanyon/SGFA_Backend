@@ -37,7 +37,8 @@ public class EdicionFeriaRepositoryAdapter implements EdicionFeriaRepositoryPort
                 lugar,
                 edicionFeria.getFechaInicio(),
                 edicionFeria.getFechaFin(),
-                edicionFeria.isActivo()
+                edicionFeria.isActivo(),
+                edicionFeria.getCupoMaximo()
         );
 
         EdicionFeriaEntity guardada = edicionFeriaJpaRepository.save(entity);
@@ -60,18 +61,18 @@ public class EdicionFeriaRepositoryAdapter implements EdicionFeriaRepositoryPort
     }
 
     @Override
-    public List<EdicionFeria> listarPorFeria(Long idFeria) {
-        return edicionFeriaJpaRepository.findByFeriaId(idFeria)
+    public List<EdicionFeria> listarTodasIncluyendoInactivas() {
+        return edicionFeriaJpaRepository.findAll()
                 .stream()
-                .filter(EdicionFeriaEntity::isActivo)
                 .map(this::aDominio)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<EdicionFeria> listarTodasIncluyendoInactivas() {
-        return edicionFeriaJpaRepository.findAll()
+    public List<EdicionFeria> listarPorFeria(Long idFeria) {
+        return edicionFeriaJpaRepository.findByFeriaId(idFeria)
                 .stream()
+                .filter(EdicionFeriaEntity::isActivo)
                 .map(this::aDominio)
                 .collect(Collectors.toList());
     }
@@ -87,7 +88,8 @@ public class EdicionFeriaRepositoryAdapter implements EdicionFeriaRepositoryPort
                 entity.getLugar(),
                 entity.getFechaInicio(),
                 entity.getFechaFin(),
-                activo
+                activo,
+                entity.getCupoMaximo()
         );
 
         edicionFeriaJpaRepository.save(actualizada);
@@ -100,7 +102,8 @@ public class EdicionFeriaRepositoryAdapter implements EdicionFeriaRepositoryPort
                 entity.getLugar().getId(),
                 entity.getFechaInicio(),
                 entity.getFechaFin(),
-                entity.isActivo()
+                entity.isActivo(),
+                entity.getCupoMaximo()
         );
     }
 }

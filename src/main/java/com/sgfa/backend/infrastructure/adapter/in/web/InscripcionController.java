@@ -1,5 +1,6 @@
 package com.sgfa.backend.infrastructure.adapter.in.web;
 
+import com.sgfa.backend.application.exception.CupoAgotadoException;
 import com.sgfa.backend.application.exception.InscripcionDuplicadaException;
 import com.sgfa.backend.application.port.in.AprobarSolicitudUseCase;
 import com.sgfa.backend.application.port.in.ConsultarSolicitudesUseCase;
@@ -76,6 +77,12 @@ public class InscripcionController {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> manejarNoEncontrado(IllegalArgumentException ex) {
+        return Map.of("error", ex.getMessage());
+    }
+
+    @ExceptionHandler(CupoAgotadoException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> manejarCupoAgotado(CupoAgotadoException ex) {
         return Map.of("error", ex.getMessage());
     }
 }
