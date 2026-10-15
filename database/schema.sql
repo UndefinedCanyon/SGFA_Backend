@@ -1,3 +1,4 @@
+SET NAMES utf8mb4;
 -- =========================================================
 -- SGFA - Software de Gestión para Ferias Artesanales
 -- Script de creación de base de datos (DDL)

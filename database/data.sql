@@ -1,5 +1,5 @@
+SET NAMES utf8mb4;
 USE sgfa_db;
-
 -- ---------------------------------------------------------
 -- Administrador (único, creado directamente por nosotros)
 -- ---------------------------------------------------------
