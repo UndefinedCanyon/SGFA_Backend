@@ -1,70 +1,15 @@
 package com.sgfa.backend.infrastructure.config;
 
-import com.sgfa.backend.application.port.in.ConfigurarCupoEdicionUseCase;
-import com.sgfa.backend.application.port.in.ConsultarOcupacionEdicionUseCase;
-import com.sgfa.backend.application.usecase.ConfigurarCupoEdicionService;
-import com.sgfa.backend.application.usecase.ConsultarOcupacionEdicionService;
-import com.sgfa.backend.application.port.in.ActualizarFeriaUseCase;
-import com.sgfa.backend.application.usecase.ActualizarFeriaService;
-import com.sgfa.backend.application.port.in.ActualizarPerfilArtesanoUseCase;
-import com.sgfa.backend.application.usecase.ActualizarPerfilArtesanoService;
-import com.sgfa.backend.application.port.in.ConsultarArtesanosUseCase;
-import com.sgfa.backend.application.usecase.ConsultarArtesanosService;
-import com.sgfa.backend.application.port.in.CambiarEstadoArtesanoUseCase;
-import com.sgfa.backend.application.port.in.CambiarEstadoFeriaUseCase;
-import com.sgfa.backend.application.port.in.CambiarEstadoEdicionFeriaUseCase;
-import com.sgfa.backend.application.usecase.CambiarEstadoArtesanoService;
-import com.sgfa.backend.application.usecase.CambiarEstadoFeriaService;
-import com.sgfa.backend.application.usecase.CambiarEstadoEdicionFeriaService;
-import com.sgfa.backend.application.port.in.SolicitarParticipacionUseCase;
-import com.sgfa.backend.application.port.in.AprobarSolicitudUseCase;
-import com.sgfa.backend.application.port.in.RechazarSolicitudUseCase;
-import com.sgfa.backend.application.port.in.ConsultarSolicitudesUseCase;
-import com.sgfa.backend.application.port.out.InscripcionRepositoryPort;
-import com.sgfa.backend.application.usecase.SolicitarParticipacionService;
-import com.sgfa.backend.application.usecase.AprobarSolicitudService;
-import com.sgfa.backend.application.usecase.RechazarSolicitudService;
-import com.sgfa.backend.application.usecase.ConsultarSolicitudesService;
-import com.sgfa.backend.application.port.in.ConsultarProductosUseCase;
-import com.sgfa.backend.application.usecase.ConsultarProductosService;
-import com.sgfa.backend.application.port.in.RegistrarProductoUseCase;
-import com.sgfa.backend.application.port.in.ActualizarProductoUseCase;
-import com.sgfa.backend.application.port.in.EliminarProductoUseCase;
-import com.sgfa.backend.application.port.out.ProductoRepositoryPort;
-import com.sgfa.backend.application.usecase.RegistrarProductoService;
-import com.sgfa.backend.application.usecase.ActualizarProductoService;
-import com.sgfa.backend.application.usecase.EliminarProductoService;
-import com.sgfa.backend.infrastructure.security.JwtService;
-import com.sgfa.backend.application.port.in.CrearLugarUseCase;
-import com.sgfa.backend.application.port.in.ConsultarLugaresUseCase;
-import com.sgfa.backend.application.port.in.RegistrarArtesanoUseCase;
-import com.sgfa.backend.application.port.in.CrearFeriaUseCase;
-import com.sgfa.backend.application.port.in.ConsultarFeriasUseCase;
-import com.sgfa.backend.application.port.in.CrearEdicionFeriaUseCase;
-import com.sgfa.backend.application.port.in.ConsultarEdicionesFeriaUseCase;
-import com.sgfa.backend.application.port.in.IniciarSesionUseCase;
-import com.sgfa.backend.application.port.out.LugarRepositoryPort;
-import com.sgfa.backend.application.port.out.ArtesanoRepositoryPort;
-import com.sgfa.backend.application.port.out.FeriaRepositoryPort;
-import com.sgfa.backend.application.port.out.EdicionFeriaRepositoryPort;
-import com.sgfa.backend.application.port.out.AdministradorRepositoryPort;
-import com.sgfa.backend.application.usecase.CrearLugarService;
-import com.sgfa.backend.application.usecase.ConsultarLugaresService;
-import com.sgfa.backend.application.usecase.RegistrarArtesanoService;
-import com.sgfa.backend.application.usecase.CrearFeriaService;
-import com.sgfa.backend.application.usecase.ConsultarFeriasService;
-import com.sgfa.backend.application.usecase.CrearEdicionFeriaService;
-import com.sgfa.backend.application.usecase.ConsultarEdicionesFeriaService;
-import com.sgfa.backend.application.usecase.IniciarSesionService;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.sgfa.backend.application.port.in.*;
+import com.sgfa.backend.application.port.out.*;
+import com.sgfa.backend.application.usecase.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import com.sgfa.backend.application.port.in.ConsultarParticipantesEdicionUseCase;
-import com.sgfa.backend.application.usecase.ConsultarParticipantesEdicionService;
 
 @Configuration
 public class UseCaseConfig {
 
+    // ---------- Lugares ----------
     @Bean
     public CrearLugarUseCase crearLugarUseCase(LugarRepositoryPort lugarRepositoryPort) {
         return new CrearLugarService(lugarRepositoryPort);
@@ -75,9 +20,26 @@ public class UseCaseConfig {
         return new ConsultarLugaresService(lugarRepositoryPort);
     }
 
-      @Bean
-    public RegistrarArtesanoUseCase registrarArtesanoUseCase(ArtesanoRepositoryPort artesanoRepositoryPort,AdministradorRepositoryPort administradorRepositoryPort,PasswordEncoder passwordEncoder) {
-        return new RegistrarArtesanoService(artesanoRepositoryPort, administradorRepositoryPort, passwordEncoder);
+    // ---------- Artesanos y sesión ----------
+    @Bean
+    public RegistrarArtesanoUseCase registrarArtesanoUseCase(ArtesanoRepositoryPort artesanoRepositoryPort,
+                                                               AdministradorRepositoryPort administradorRepositoryPort,
+                                                               CifradoContrasenaPort cifradoContrasenaPort) {
+        return new RegistrarArtesanoService(artesanoRepositoryPort, administradorRepositoryPort, cifradoContrasenaPort);
+    }
+
+    @Bean
+    public IniciarSesionUseCase iniciarSesionUseCase(ArtesanoRepositoryPort artesanoRepositoryPort,
+                                                       AdministradorRepositoryPort administradorRepositoryPort,
+                                                       CifradoContrasenaPort cifradoContrasenaPort,
+                                                       GeneradorTokenPort generadorTokenPort) {
+        return new IniciarSesionService(artesanoRepositoryPort, administradorRepositoryPort,
+                cifradoContrasenaPort, generadorTokenPort);
+    }
+
+    @Bean
+    public ConsultarArtesanosUseCase consultarArtesanosUseCase(ArtesanoRepositoryPort artesanoRepositoryPort) {
+        return new ConsultarArtesanosService(artesanoRepositoryPort);
     }
 
     @Bean
@@ -86,21 +48,14 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public CrearFeriaUseCase crearFeriaUseCase(FeriaRepositoryPort feriaRepositoryPort) {
-        return new CrearFeriaService(feriaRepositoryPort);
-    }
-    
-    @Bean
-    public IniciarSesionUseCase iniciarSesionUseCase(ArtesanoRepositoryPort artesanoRepositoryPort,
-                                                    AdministradorRepositoryPort administradorRepositoryPort,
-                                                    PasswordEncoder passwordEncoder,
-                                                    JwtService jwtService) {
-        return new IniciarSesionService(artesanoRepositoryPort, administradorRepositoryPort, passwordEncoder, jwtService);
+    public CambiarEstadoArtesanoUseCase cambiarEstadoArtesanoUseCase(ArtesanoRepositoryPort artesanoRepositoryPort) {
+        return new CambiarEstadoArtesanoService(artesanoRepositoryPort);
     }
 
+    // ---------- Ferias ----------
     @Bean
-    public ConsultarProductosUseCase consultarProductosUseCase(ProductoRepositoryPort productoRepositoryPort) {
-        return new ConsultarProductosService(productoRepositoryPort);
+    public CrearFeriaUseCase crearFeriaUseCase(FeriaRepositoryPort feriaRepositoryPort) {
+        return new CrearFeriaService(feriaRepositoryPort);
     }
 
     @Bean
@@ -108,6 +63,17 @@ public class UseCaseConfig {
         return new ConsultarFeriasService(feriaRepositoryPort);
     }
 
+    @Bean
+    public ActualizarFeriaUseCase actualizarFeriaUseCase(FeriaRepositoryPort feriaRepositoryPort) {
+        return new ActualizarFeriaService(feriaRepositoryPort);
+    }
+
+    @Bean
+    public CambiarEstadoFeriaUseCase cambiarEstadoFeriaUseCase(FeriaRepositoryPort feriaRepositoryPort) {
+        return new CambiarEstadoFeriaService(feriaRepositoryPort);
+    }
+
+    // ---------- Ediciones ----------
     @Bean
     public CrearEdicionFeriaUseCase crearEdicionFeriaUseCase(EdicionFeriaRepositoryPort edicionFeriaRepositoryPort) {
         return new CrearEdicionFeriaService(edicionFeriaRepositoryPort);
@@ -118,6 +84,35 @@ public class UseCaseConfig {
         return new ConsultarEdicionesFeriaService(edicionFeriaRepositoryPort);
     }
 
+    @Bean
+    public CambiarEstadoEdicionFeriaUseCase cambiarEstadoEdicionFeriaUseCase(EdicionFeriaRepositoryPort edicionFeriaRepositoryPort) {
+        return new CambiarEstadoEdicionFeriaService(edicionFeriaRepositoryPort);
+    }
+
+    @Bean
+    public ConfigurarCupoEdicionUseCase configurarCupoEdicionUseCase(EdicionFeriaRepositoryPort edicionFeriaRepositoryPort,
+                                                                       InscripcionRepositoryPort inscripcionRepositoryPort) {
+        return new ConfigurarCupoEdicionService(edicionFeriaRepositoryPort, inscripcionRepositoryPort);
+    }
+
+    @Bean
+    public ConsultarOcupacionEdicionUseCase consultarOcupacionEdicionUseCase(EdicionFeriaRepositoryPort edicionFeriaRepositoryPort,
+                                                                               InscripcionRepositoryPort inscripcionRepositoryPort) {
+        return new ConsultarOcupacionEdicionService(edicionFeriaRepositoryPort, inscripcionRepositoryPort);
+    }
+
+    @Bean
+    public ConsultarParticipantesEdicionUseCase consultarParticipantesEdicionUseCase(
+            InscripcionRepositoryPort inscripcionRepositoryPort,
+            ArtesanoRepositoryPort artesanoRepositoryPort,
+            ProductoRepositoryPort productoRepositoryPort,
+            EdicionFeriaRepositoryPort edicionFeriaRepositoryPort) {
+        return new ConsultarParticipantesEdicionService(
+                inscripcionRepositoryPort, artesanoRepositoryPort,
+                productoRepositoryPort, edicionFeriaRepositoryPort);
+    }
+
+    // ---------- Productos ----------
     @Bean
     public RegistrarProductoUseCase registrarProductoUseCase(ProductoRepositoryPort productoRepositoryPort) {
         return new RegistrarProductoService(productoRepositoryPort);
@@ -134,13 +129,19 @@ public class UseCaseConfig {
     }
 
     @Bean
+    public ConsultarProductosUseCase consultarProductosUseCase(ProductoRepositoryPort productoRepositoryPort) {
+        return new ConsultarProductosService(productoRepositoryPort);
+    }
+
+    // ---------- Inscripciones ----------
+    @Bean
     public SolicitarParticipacionUseCase solicitarParticipacionUseCase(InscripcionRepositoryPort inscripcionRepositoryPort) {
         return new SolicitarParticipacionService(inscripcionRepositoryPort);
     }
 
     @Bean
     public AprobarSolicitudUseCase aprobarSolicitudUseCase(InscripcionRepositoryPort inscripcionRepositoryPort,
-        EdicionFeriaRepositoryPort edicionFeriaRepositoryPort) {
+                                                             EdicionFeriaRepositoryPort edicionFeriaRepositoryPort) {
         return new AprobarSolicitudService(inscripcionRepositoryPort, edicionFeriaRepositoryPort);
     }
 
@@ -152,53 +153,5 @@ public class UseCaseConfig {
     @Bean
     public ConsultarSolicitudesUseCase consultarSolicitudesUseCase(InscripcionRepositoryPort inscripcionRepositoryPort) {
         return new ConsultarSolicitudesService(inscripcionRepositoryPort);
-    }
-
-    @Bean
-    public CambiarEstadoArtesanoUseCase cambiarEstadoArtesanoUseCase(ArtesanoRepositoryPort artesanoRepositoryPort) {
-        return new CambiarEstadoArtesanoService(artesanoRepositoryPort);
-    }
-
-    @Bean
-    public CambiarEstadoFeriaUseCase cambiarEstadoFeriaUseCase(FeriaRepositoryPort feriaRepositoryPort) {
-        return new CambiarEstadoFeriaService(feriaRepositoryPort);
-    }
-
-    @Bean
-    public CambiarEstadoEdicionFeriaUseCase cambiarEstadoEdicionFeriaUseCase(EdicionFeriaRepositoryPort edicionFeriaRepositoryPort) {
-        return new CambiarEstadoEdicionFeriaService(edicionFeriaRepositoryPort);
-    }
-    
-    @Bean
-    public ConsultarArtesanosUseCase consultarArtesanosUseCase(ArtesanoRepositoryPort artesanoRepositoryPort) {
-        return new ConsultarArtesanosService(artesanoRepositoryPort);
-    }
-
-    @Bean
-    public ActualizarFeriaUseCase actualizarFeriaUseCase(FeriaRepositoryPort feriaRepositoryPort) {
-        return new ActualizarFeriaService(feriaRepositoryPort);
-    }
-
-    @Bean
-    public ConsultarParticipantesEdicionUseCase consultarParticipantesEdicionUseCase(
-            InscripcionRepositoryPort inscripcionRepositoryPort,
-            ArtesanoRepositoryPort artesanoRepositoryPort,
-            ProductoRepositoryPort productoRepositoryPort,
-            EdicionFeriaRepositoryPort edicionFeriaRepositoryPort) {
-        return new ConsultarParticipantesEdicionService(
-                inscripcionRepositoryPort, artesanoRepositoryPort,
-                productoRepositoryPort, edicionFeriaRepositoryPort);
-    }
-
-    @Bean
-    public ConfigurarCupoEdicionUseCase configurarCupoEdicionUseCase(EdicionFeriaRepositoryPort edicionFeriaRepositoryPort,
-        InscripcionRepositoryPort inscripcionRepositoryPort) {
-        return new ConfigurarCupoEdicionService(edicionFeriaRepositoryPort, inscripcionRepositoryPort);
-    }
-
-    @Bean
-    public ConsultarOcupacionEdicionUseCase consultarOcupacionEdicionUseCase(EdicionFeriaRepositoryPort edicionFeriaRepositoryPort,
-        InscripcionRepositoryPort inscripcionRepositoryPort) {
-        return new ConsultarOcupacionEdicionService(edicionFeriaRepositoryPort, inscripcionRepositoryPort);
     }
 }

@@ -4,29 +4,31 @@ import com.sgfa.backend.application.exception.CredencialesInvalidasException;
 import com.sgfa.backend.application.port.in.IniciarSesionUseCase;
 import com.sgfa.backend.application.port.out.AdministradorRepositoryPort;
 import com.sgfa.backend.application.port.out.ArtesanoRepositoryPort;
+import com.sgfa.backend.application.port.out.CifradoContrasenaPort;
+import com.sgfa.backend.application.port.out.GeneradorTokenPort;
 import com.sgfa.backend.domain.model.Administrador;
 import com.sgfa.backend.domain.model.Artesano;
 import com.sgfa.backend.domain.model.SesionIniciada;
-import com.sgfa.backend.infrastructure.security.JwtService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
 public class IniciarSesionService implements IniciarSesionUseCase {
 
+    private static final String MENSAJE_CREDENCIALES = "Correo o contraseña incorrectos.";
+
     private final ArtesanoRepositoryPort artesanoRepositoryPort;
     private final AdministradorRepositoryPort administradorRepositoryPort;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final CifradoContrasenaPort cifradoContrasenaPort;
+    private final GeneradorTokenPort generadorTokenPort;
 
     public IniciarSesionService(ArtesanoRepositoryPort artesanoRepositoryPort,
                                  AdministradorRepositoryPort administradorRepositoryPort,
-                                 PasswordEncoder passwordEncoder,
-                                 JwtService jwtService) {
+                                 CifradoContrasenaPort cifradoContrasenaPort,
+                                 GeneradorTokenPort generadorTokenPort) {
         this.artesanoRepositoryPort = artesanoRepositoryPort;
         this.administradorRepositoryPort = administradorRepositoryPort;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
+        this.cifradoContrasenaPort = cifradoContrasenaPort;
+        this.generadorTokenPort = generadorTokenPort;
     }
 
     @Override
@@ -37,14 +39,12 @@ public class IniciarSesionService implements IniciarSesionUseCase {
         if (artesanoEncontrado.isPresent()) {
             Artesano artesano = artesanoEncontrado.get();
 
-            if (!artesano.isActivo()) {
-                throw new CredencialesInvalidasException("Correo o contraseña incorrectos.");
+            if (!artesano.isActivo()
+                    || !cifradoContrasenaPort.coincide(contrasena, artesano.getContrasena())) {
+                throw new CredencialesInvalidasException(MENSAJE_CREDENCIALES);
             }
 
-            if (!passwordEncoder.matches(contrasena, artesano.getContrasena())) {
-                throw new CredencialesInvalidasException("Correo o contraseña incorrectos.");
-            }
-            String token = jwtService.generarToken(artesano.getCorreoElectronico(), "ARTESANO", artesano.getId());
+            String token = generadorTokenPort.generar(artesano.getCorreoElectronico(), "ARTESANO", artesano.getId());
             return new SesionIniciada(artesano.getId(), artesano.getNombre(),
                     artesano.getCorreoElectronico(), "ARTESANO", token);
         }
@@ -53,14 +53,16 @@ public class IniciarSesionService implements IniciarSesionUseCase {
 
         if (adminEncontrado.isPresent()) {
             Administrador admin = adminEncontrado.get();
-            if (!passwordEncoder.matches(contrasena, admin.getContrasena())) {
-                throw new CredencialesInvalidasException("Correo o contraseña incorrectos.");
+
+            if (!cifradoContrasenaPort.coincide(contrasena, admin.getContrasena())) {
+                throw new CredencialesInvalidasException(MENSAJE_CREDENCIALES);
             }
-            String token = jwtService.generarToken(admin.getCorreoElectronico(), "ADMINISTRADOR", admin.getId());
+
+            String token = generadorTokenPort.generar(admin.getCorreoElectronico(), "ADMINISTRADOR", admin.getId());
             return new SesionIniciada(admin.getId(), admin.getNombre(),
                     admin.getCorreoElectronico(), "ADMINISTRADOR", token);
         }
 
-        throw new CredencialesInvalidasException("Correo o contraseña incorrectos.");
+        throw new CredencialesInvalidasException(MENSAJE_CREDENCIALES);
     }
 }
