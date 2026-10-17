@@ -15,7 +15,8 @@ public class JwtService {
     @Value("${JWT_SECRET}")
     private String claveSecreta;
 
-    private static final long DURACION_MS = 1000 * 60 * 60 * 2; // 2 horas
+    @Value("${JWT_EXPIRATION_MS:7200000}")
+    private long duracionMs;
 
     private SecretKey obtenerClave() {
         return Keys.hmacShaKeyFor(claveSecreta.getBytes());
@@ -23,7 +24,7 @@ public class JwtService {
 
     public String generarToken(String correoElectronico, String rol, Long id) {
         Date ahora = new Date();
-        Date expiracion = new Date(ahora.getTime() + DURACION_MS);
+        Date expiracion = new Date(ahora.getTime() + duracionMs);
 
         return Jwts.builder()
                 .subject(correoElectronico)

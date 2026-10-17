@@ -32,8 +32,13 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-7200000}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
+      JPA_SHOW_SQL: ${JPA_SHOW_SQL:-false}
+      SWAGGER_ENABLED: ${SWAGGER_ENABLED:-true}
     ports:
       - "8080:8080"
+    stop_grace_period: 30s
 
   frontend:
     build:
