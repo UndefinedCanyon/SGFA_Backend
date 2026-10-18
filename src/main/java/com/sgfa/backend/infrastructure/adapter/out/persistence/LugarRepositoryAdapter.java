@@ -19,7 +19,13 @@ public class LugarRepositoryAdapter implements LugarRepositoryPort {
 
     @Override
     public Lugar guardar(Lugar lugar) {
-        LugarEntity entity = new LugarEntity(lugar.getId(), lugar.getNombre(), lugar.getDireccion());
+        LugarEntity entity = new LugarEntity(
+                lugar.getId(),
+                lugar.getNombre(),
+                lugar.getDireccion(),
+                lugar.getLatitud(),
+                lugar.getLongitud()
+        );
         LugarEntity guardada = lugarJpaRepository.save(entity);
         return aDominio(guardada);
     }
@@ -39,6 +45,12 @@ public class LugarRepositoryAdapter implements LugarRepositoryPort {
     }
 
     private Lugar aDominio(LugarEntity entity) {
-        return new Lugar(entity.getId(), entity.getNombre(), entity.getDireccion());
+        return new Lugar(
+                entity.getId(),
+                entity.getNombre(),
+                entity.getDireccion(),
+                entity.getLatitud(),
+                entity.getLongitud()
+        );
     }
 }

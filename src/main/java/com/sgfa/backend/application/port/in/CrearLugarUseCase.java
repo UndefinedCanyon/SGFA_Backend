@@ -4,5 +4,5 @@ import com.sgfa.backend.domain.model.Lugar;
 
 public interface CrearLugarUseCase {
 
-    Lugar crear(String nombre, String direccion);
+    Lugar crear(String nombre, String direccion, Double latitud, Double longitud);
 }

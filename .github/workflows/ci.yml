@@ -21,7 +21,14 @@ jobs:
 
       - name: Dar permiso de ejecución a mvnw
         run: chmod +x mvnw
-
+      - name: Verificar que los scripts SQL fijan la codificación
+        run: |
+          for f in database/*.sql; do
+            if [ "$(head -n 1 "$f" | tr -d '\r')" != "SET NAMES utf8mb4;" ]; then
+              echo "La primera línea de $f debe ser: SET NAMES utf8mb4;"
+              exit 1
+            fi
+          done
       - name: Ejecutar pruebas de arquitectura
         run: ./mvnw -B test -Dtest=ArquitecturaHexagonalTest
 

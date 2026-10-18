@@ -44,7 +44,13 @@ CREATE TABLE artesano (
 CREATE TABLE lugar (
     id_lugar    BIGINT AUTO_INCREMENT PRIMARY KEY,
     nombre      VARCHAR(150) NOT NULL,
-    direccion   VARCHAR(255) NOT NULL
+    direccion   VARCHAR(255) NOT NULL,
+    latitud     DECIMAL(9,6) NULL,
+    longitud    DECIMAL(9,6) NULL,
+    CONSTRAINT chk_lugar_ubicacion CHECK (
+        (latitud IS NULL AND longitud IS NULL)
+        OR (latitud BETWEEN -90 AND 90 AND longitud BETWEEN -180 AND 180)
+    )
 );
 
 -- ---------------------------------------------------------

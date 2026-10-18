@@ -17,14 +17,22 @@ public class LugarEntity {
     @Column(name = "direccion", nullable = false)
     private String direccion;
 
+    @Column(name = "latitud")
+    private Double latitud;
+
+    @Column(name = "longitud")
+    private Double longitud;
+
     // JPA exige un constructor vacío
     public LugarEntity() {
     }
 
-    public LugarEntity(Long id, String nombre, String direccion) {
+    public LugarEntity(Long id, String nombre, String direccion, Double latitud, Double longitud) {
         this.id = id;
         this.nombre = nombre;
         this.direccion = direccion;
+        this.latitud = latitud;
+        this.longitud = longitud;
     }
 
     public Long getId() {
@@ -39,11 +47,11 @@ public class LugarEntity {
         return direccion;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public Double getLatitud() {
+        return latitud;
     }
 
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
+    public Double getLongitud() {
+        return longitud;
     }
 }

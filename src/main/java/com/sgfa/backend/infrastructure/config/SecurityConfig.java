@@ -101,6 +101,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/edicionesferia/todas").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.PUT, "/api/edicionesferia/**").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.POST, "/api/lugares").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/lugares/**").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.GET, "/api/artesanos").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.GET, "/api/inscripciones").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.PUT, "/api/inscripciones/**").hasRole("ADMINISTRADOR")

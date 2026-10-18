@@ -20,6 +20,11 @@ public class UseCaseConfig {
         return new ConsultarLugaresService(lugarRepositoryPort);
     }
 
+    @Bean
+    public ActualizarLugarUseCase actualizarLugarUseCase(LugarRepositoryPort lugarRepositoryPort) {
+        return new ActualizarLugarService(lugarRepositoryPort);
+    }
+
     // ---------- Artesanos y sesión ----------
     @Bean
     public RegistrarArtesanoUseCase registrarArtesanoUseCase(ArtesanoRepositoryPort artesanoRepositoryPort,

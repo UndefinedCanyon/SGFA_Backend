@@ -1,7 +1,8 @@
 SET NAMES utf8mb4;
 USE sgfa_db;
+
 -- ---------------------------------------------------------
--- Administrador (único, creado directamente por nosotros)
+-- Administrador (contraseña cifrada con BCrypt: admin123)
 -- ---------------------------------------------------------
 INSERT INTO administrador (nombre, correo_electronico, contrasena)
 VALUES ('Admin SGFA', 'admin@sgfa.com', '$2b$10$XCB89QB0Z7p36C/aSdAYceRLKPK7ZexjchofRUwqu0gOvX6Ov.3me');
@@ -9,19 +10,19 @@ VALUES ('Admin SGFA', 'admin@sgfa.com', '$2b$10$XCB89QB0Z7p36C/aSdAYceRLKPK7Zexj
 -- ---------------------------------------------------------
 -- Lugares
 -- ---------------------------------------------------------
-INSERT INTO lugar (nombre, direccion) VALUES
-('Parque Principal de Fusagasugá', 'Cra 6 # 6-40, Fusagasugá'),
-('Plaza de Mercado', 'Cll 8 # 5-20, Fusagasugá');
+INSERT INTO lugar (nombre, direccion, latitud, longitud) VALUES
+('Parque Principal de Fusagasugá', 'Cra 6 # 6-40, Fusagasugá', 4.336900, -74.363600),
+('Plaza de Mercado', 'Cll 8 # 5-20, Fusagasugá', 4.339500, -74.360800);
 
 -- ---------------------------------------------------------
--- Ferias (concepto general, sin fechas)
+-- Ferias
 -- ---------------------------------------------------------
 INSERT INTO feria (nombre_feria, id_admin) VALUES
 ('Feria Artesanal de Fusagasugá', 1),
 ('Feria Navideña Artesanal', 1);
 
 -- ---------------------------------------------------------
--- Ediciones de feria (fechas y lugar concretos)
+-- Ediciones de feria
 -- ---------------------------------------------------------
 INSERT INTO edicion_feria (id_feria, id_lugar, fecha_inicio, fecha_fin) VALUES
 (1, 1, '2026-10-15', '2026-10-18'),
@@ -29,7 +30,7 @@ INSERT INTO edicion_feria (id_feria, id_lugar, fecha_inicio, fecha_fin) VALUES
 (2, 1, '2026-12-10', '2026-12-24');
 
 -- ---------------------------------------------------------
--- Artesanos
+-- Artesanos (contraseña cifrada con BCrypt: clave123)
 -- ---------------------------------------------------------
 INSERT INTO artesano (nombre, correo_electronico, contrasena, cc, telefono, nombre_emprendimiento, descripcion_corta) VALUES
 ('Maria Gomez', 'maria@correo.com', '$2b$10$O5uAiP6go1h1t/57I3lJUuWxFNG3u/D/1utXt6.Uf2kzLmn2pFgy2', '1000111222', '3001112233', 'Tejidos Maria', 'Tejidos artesanales en lana y algodón'),
@@ -47,13 +48,10 @@ INSERT INTO producto (nombre, precio, cantidad, id_artesano) VALUES
 ('Bocadillo veleño', 5000.00, 50, 3);
 
 -- ---------------------------------------------------------
--- Inscripciones (distintos estados para poder probar RF-11/RF-13)
+-- Inscripciones
 -- ---------------------------------------------------------
 INSERT INTO inscripcion (id_artesano, id_edicionferia, fecha_inscripcion, estado) VALUES
 (1, 1, '2026-09-01', 'APROBADA'),
 (2, 1, '2026-09-02', 'PENDIENTE'),
 (3, 1, '2026-09-03', 'RECHAZADA'),
 (2, 3, '2026-09-10', 'PENDIENTE');
-SELECT * FROM administrador;
-SELECT * FROM artesano;
-SELECT * FROM inscripcion;
