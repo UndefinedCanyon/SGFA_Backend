@@ -45,6 +45,7 @@ public class ConsultarParticipantesEdicionService implements ConsultarParticipan
                             artesano.getId(),
                             artesano.getNombreEmprendimiento(),
                             artesano.getDescripcionCorta(),
+                            artesano.getLogo(),
                             productoRepositoryPort.listarPorArtesano(artesano.getId())
                     )));
         }

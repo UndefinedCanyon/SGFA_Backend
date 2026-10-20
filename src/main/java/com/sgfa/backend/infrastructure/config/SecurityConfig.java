@@ -92,6 +92,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/edicionesferia/*/participantes").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/edicionesferia/*/ocupacion").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/lugares").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/imagenes/*").permitAll()
 
                         // Solo el administrador
                         .requestMatchers(HttpMethod.POST, "/api/ferias").hasRole("ADMINISTRADOR")
@@ -109,6 +110,8 @@ public class SecurityConfig {
                         // Solo el artesano (el orden importa: el perfil va antes de PUT /api/artesanos/**)
                         .requestMatchers(HttpMethod.GET, "/api/artesanos/perfil").hasRole("ARTESANO")
                         .requestMatchers(HttpMethod.PUT, "/api/artesanos/perfil").hasRole("ARTESANO")
+                        .requestMatchers(HttpMethod.PUT, "/api/artesanos/perfil/logo").hasRole("ARTESANO")
+                        .requestMatchers(HttpMethod.DELETE, "/api/artesanos/perfil/logo").hasRole("ARTESANO")
                         .requestMatchers(HttpMethod.PUT, "/api/artesanos/**").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.POST, "/api/productos").hasRole("ARTESANO")
                         .requestMatchers(HttpMethod.GET, "/api/productos").hasRole("ARTESANO")

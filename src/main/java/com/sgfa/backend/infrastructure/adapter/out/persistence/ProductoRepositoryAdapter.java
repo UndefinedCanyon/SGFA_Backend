@@ -30,7 +30,8 @@ public class ProductoRepositoryAdapter implements ProductoRepositoryPort {
                 producto.getNombre(),
                 producto.getPrecio(),
                 producto.getCantidad(),
-                artesano
+                artesano,
+                producto.getImagen()
         );
 
         ProductoEntity guardado = productoJpaRepository.save(entity);
@@ -62,7 +63,8 @@ public class ProductoRepositoryAdapter implements ProductoRepositoryPort {
                 entity.getNombre(),
                 entity.getPrecio(),
                 entity.getCantidad(),
-                entity.getArtesano().getId()
+                entity.getArtesano().getId(),
+                entity.getImagen()
         );
     }
 }

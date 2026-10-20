@@ -5,13 +5,16 @@ import com.sgfa.backend.application.exception.DatoInvalidoException;
 import com.sgfa.backend.application.port.in.ActualizarPerfilArtesanoUseCase;
 import com.sgfa.backend.application.port.in.CambiarEstadoArtesanoUseCase;
 import com.sgfa.backend.application.port.in.ConsultarArtesanosUseCase;
+import com.sgfa.backend.application.port.in.GestionarLogoArtesanoUseCase;
 import com.sgfa.backend.application.port.in.RegistrarArtesanoUseCase;
 import com.sgfa.backend.domain.model.Artesano;
 import com.sgfa.backend.infrastructure.security.UsuarioAutenticado;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,21 +28,32 @@ public class ArtesanoController {
     private final CambiarEstadoArtesanoUseCase cambiarEstadoArtesanoUseCase;
     private final ConsultarArtesanosUseCase consultarArtesanosUseCase;
     private final ActualizarPerfilArtesanoUseCase actualizarPerfilArtesanoUseCase;
+    private final GestionarLogoArtesanoUseCase gestionarLogoArtesanoUseCase;
 
     public ArtesanoController(RegistrarArtesanoUseCase registrarArtesanoUseCase,
                                CambiarEstadoArtesanoUseCase cambiarEstadoArtesanoUseCase,
                                ConsultarArtesanosUseCase consultarArtesanosUseCase,
-                               ActualizarPerfilArtesanoUseCase actualizarPerfilArtesanoUseCase) {
+                               ActualizarPerfilArtesanoUseCase actualizarPerfilArtesanoUseCase,
+                               GestionarLogoArtesanoUseCase gestionarLogoArtesanoUseCase) {
         this.registrarArtesanoUseCase = registrarArtesanoUseCase;
         this.cambiarEstadoArtesanoUseCase = cambiarEstadoArtesanoUseCase;
         this.consultarArtesanosUseCase = consultarArtesanosUseCase;
         this.actualizarPerfilArtesanoUseCase = actualizarPerfilArtesanoUseCase;
+        this.gestionarLogoArtesanoUseCase = gestionarLogoArtesanoUseCase;
     }
 
     private UsuarioAutenticado obtenerUsuarioAutenticado() {
         return (UsuarioAutenticado) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
+    }
+
+    private byte[] leerBytes(MultipartFile archivo) {
+        try {
+            return archivo.getBytes();
+        } catch (IOException e) {
+            throw new DatoInvalidoException("No se pudo leer el archivo enviado.");
+        }
     }
 
     private Map<String, Object> aRespuesta(Artesano artesano) {
@@ -52,6 +66,7 @@ public class ArtesanoController {
         respuesta.put("nombreEmprendimiento", artesano.getNombreEmprendimiento());
         respuesta.put("descripcionCorta", artesano.getDescripcionCorta());
         respuesta.put("activo", artesano.isActivo());
+        respuesta.put("logo", artesano.getLogo());
         return respuesta;
     }
 
@@ -94,6 +109,18 @@ public class ArtesanoController {
                 body.get("descripcionCorta")
         );
         return aRespuesta(actualizado);
+    }
+
+    @PutMapping("/perfil/logo")
+    public Map<String, Object> subirLogo(@RequestParam("archivo") MultipartFile archivo) {
+        UsuarioAutenticado usuario = obtenerUsuarioAutenticado();
+        return aRespuesta(gestionarLogoArtesanoUseCase.subirLogo(usuario.getId(), leerBytes(archivo)));
+    }
+
+    @DeleteMapping("/perfil/logo")
+    public Map<String, Object> quitarLogo() {
+        UsuarioAutenticado usuario = obtenerUsuarioAutenticado();
+        return aRespuesta(gestionarLogoArtesanoUseCase.quitarLogo(usuario.getId()));
     }
 
     @PutMapping("/{id}/estado")

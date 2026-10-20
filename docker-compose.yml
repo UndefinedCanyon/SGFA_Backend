@@ -38,6 +38,8 @@ services:
       SWAGGER_ENABLED: ${SWAGGER_ENABLED:-true}
     ports:
       - "8080:8080"
+    volumes:
+      - imagenes_data:/data/imagenes
     stop_grace_period: 30s
 
   frontend:
@@ -54,3 +56,4 @@ services:
 
 volumes:
   db_data:
+  imagenes_data:

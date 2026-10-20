@@ -129,8 +129,26 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public EliminarProductoUseCase eliminarProductoUseCase(ProductoRepositoryPort productoRepositoryPort) {
-        return new EliminarProductoService(productoRepositoryPort);
+    public EliminarProductoUseCase eliminarProductoUseCase(ProductoRepositoryPort productoRepositoryPort,
+                                                             AlmacenImagenesPort almacenImagenesPort) {
+        return new EliminarProductoService(productoRepositoryPort, almacenImagenesPort);
+    }
+
+    @Bean
+    public GestionarImagenProductoUseCase gestionarImagenProductoUseCase(ProductoRepositoryPort productoRepositoryPort,
+                                                                           AlmacenImagenesPort almacenImagenesPort) {
+        return new GestionarImagenProductoService(productoRepositoryPort, almacenImagenesPort);
+    }
+
+    @Bean
+    public GestionarLogoArtesanoUseCase gestionarLogoArtesanoUseCase(ArtesanoRepositoryPort artesanoRepositoryPort,
+                                                                       AlmacenImagenesPort almacenImagenesPort) {
+        return new GestionarLogoArtesanoService(artesanoRepositoryPort, almacenImagenesPort);
+    }
+
+    @Bean
+    public ConsultarImagenUseCase consultarImagenUseCase(AlmacenImagenesPort almacenImagenesPort) {
+        return new ConsultarImagenService(almacenImagenesPort);
     }
 
     @Bean

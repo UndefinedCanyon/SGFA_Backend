@@ -35,12 +35,22 @@ public class ArtesanoEntity {
     @Column(name = "activo", nullable = false)
     private boolean activo;
 
+    @Column(name = "logo")
+    private String logo;
+
     public ArtesanoEntity() {
     }
 
     public ArtesanoEntity(Long id, String nombre, String correoElectronico, String contrasena,
                            String cc, String telefono, String nombreEmprendimiento, String descripcionCorta,
                            boolean activo) {
+        this(id, nombre, correoElectronico, contrasena, cc, telefono,
+                nombreEmprendimiento, descripcionCorta, activo, null);
+    }
+
+    public ArtesanoEntity(Long id, String nombre, String correoElectronico, String contrasena,
+                           String cc, String telefono, String nombreEmprendimiento, String descripcionCorta,
+                           boolean activo, String logo) {
         this.id = id;
         this.nombre = nombre;
         this.correoElectronico = correoElectronico;
@@ -50,6 +60,7 @@ public class ArtesanoEntity {
         this.nombreEmprendimiento = nombreEmprendimiento;
         this.descripcionCorta = descripcionCorta;
         this.activo = activo;
+        this.logo = logo;
     }
 
     public boolean isActivo() {
@@ -86,5 +97,9 @@ public class ArtesanoEntity {
 
     public String getDescripcionCorta() {
         return descripcionCorta;
+    }
+
+    public String getLogo() {
+        return logo;
     }
 }

@@ -2,15 +2,19 @@ package com.sgfa.backend.application.usecase;
 
 import com.sgfa.backend.application.exception.AccesoNoAutorizadoException;
 import com.sgfa.backend.application.port.in.EliminarProductoUseCase;
+import com.sgfa.backend.application.port.out.AlmacenImagenesPort;
 import com.sgfa.backend.application.port.out.ProductoRepositoryPort;
 import com.sgfa.backend.domain.model.Producto;
 
 public class EliminarProductoService implements EliminarProductoUseCase {
 
     private final ProductoRepositoryPort productoRepositoryPort;
+    private final AlmacenImagenesPort almacenImagenesPort;
 
-    public EliminarProductoService(ProductoRepositoryPort productoRepositoryPort) {
+    public EliminarProductoService(ProductoRepositoryPort productoRepositoryPort,
+                                    AlmacenImagenesPort almacenImagenesPort) {
         this.productoRepositoryPort = productoRepositoryPort;
+        this.almacenImagenesPort = almacenImagenesPort;
     }
 
     @Override
@@ -23,5 +27,9 @@ public class EliminarProductoService implements EliminarProductoUseCase {
         }
 
         productoRepositoryPort.eliminar(idProducto);
+
+        if (producto.getImagen() != null) {
+            almacenImagenesPort.eliminar(producto.getImagen());
+        }
     }
 }

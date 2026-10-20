@@ -22,6 +22,9 @@ public class ProductoEntity {
     @Column(name = "cantidad", nullable = false)
     private Integer cantidad;
 
+    @Column(name = "imagen")
+    private String imagen;
+
     @ManyToOne
     @JoinColumn(name = "id_artesano", nullable = false)
     private ArtesanoEntity artesano;
@@ -30,11 +33,17 @@ public class ProductoEntity {
     }
 
     public ProductoEntity(Long id, String nombre, BigDecimal precio, Integer cantidad, ArtesanoEntity artesano) {
+        this(id, nombre, precio, cantidad, artesano, null);
+    }
+
+    public ProductoEntity(Long id, String nombre, BigDecimal precio, Integer cantidad,
+                           ArtesanoEntity artesano, String imagen) {
         this.id = id;
         this.nombre = nombre;
         this.precio = precio;
         this.cantidad = cantidad;
         this.artesano = artesano;
+        this.imagen = imagen;
     }
 
     public Long getId() {
@@ -51,6 +60,10 @@ public class ProductoEntity {
 
     public Integer getCantidad() {
         return cantidad;
+    }
+
+    public String getImagen() {
+        return imagen;
     }
 
     public ArtesanoEntity getArtesano() {

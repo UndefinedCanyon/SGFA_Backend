@@ -34,6 +34,7 @@ CREATE TABLE artesano (
     telefono            VARCHAR(20),
     nombre_emprendimiento VARCHAR(150) NOT NULL,
     descripcion_corta   VARCHAR(300),
+	logo                VARCHAR(64) NULL,
     CONSTRAINT uq_artesano_correo UNIQUE (correo_electronico),
     CONSTRAINT uq_artesano_cc UNIQUE (cc)
 );
@@ -91,6 +92,7 @@ CREATE TABLE producto (
     nombre       VARCHAR(150) NOT NULL,
     precio       DECIMAL(10,2) NOT NULL,
     cantidad     INT NOT NULL DEFAULT 0,
+	imagen       VARCHAR(64) NULL,
     id_artesano  BIGINT NOT NULL,
     CONSTRAINT fk_producto_artesano
         FOREIGN KEY (id_artesano) REFERENCES artesano(id_artesano)

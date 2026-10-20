@@ -9,13 +9,19 @@ public class Producto {
     private BigDecimal precio;
     private Integer cantidad;
     private Long idArtesano;
+    private String imagen;
 
     public Producto(Long id, String nombre, BigDecimal precio, Integer cantidad, Long idArtesano) {
+        this(id, nombre, precio, cantidad, idArtesano, null);
+    }
+
+    public Producto(Long id, String nombre, BigDecimal precio, Integer cantidad, Long idArtesano, String imagen) {
         this.id = id;
         this.nombre = nombre;
         this.precio = precio;
         this.cantidad = cantidad;
         this.idArtesano = idArtesano;
+        this.imagen = imagen;
     }
 
     public Long getId() {
@@ -38,6 +44,10 @@ public class Producto {
         return idArtesano;
     }
 
+    public String getImagen() {
+        return imagen;
+    }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
@@ -48,5 +58,9 @@ public class Producto {
 
     public void setCantidad(Integer cantidad) {
         this.cantidad = cantidad;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 }

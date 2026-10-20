@@ -17,7 +17,7 @@ public class ArtesanoRepositoryAdapter implements ArtesanoRepositoryPort {
         this.artesanoJpaRepository = artesanoJpaRepository;
     }
 
-     @Override
+    @Override
     public Artesano guardar(Artesano artesano) {
         ArtesanoEntity entity = new ArtesanoEntity(
                 artesano.getId(),
@@ -28,7 +28,8 @@ public class ArtesanoRepositoryAdapter implements ArtesanoRepositoryPort {
                 artesano.getTelefono(),
                 artesano.getNombreEmprendimiento(),
                 artesano.getDescripcionCorta(),
-                artesano.isActivo()
+                artesano.isActivo(),
+                artesano.getLogo()
         );
         ArtesanoEntity guardado = artesanoJpaRepository.save(entity);
         return aDominio(guardado);
@@ -37,6 +38,12 @@ public class ArtesanoRepositoryAdapter implements ArtesanoRepositoryPort {
     @Override
     public Optional<Artesano> buscarPorId(Long id) {
         return artesanoJpaRepository.findById(id)
+                .map(this::aDominio);
+    }
+
+    @Override
+    public Optional<Artesano> buscarPorCorreo(String correoElectronico) {
+        return artesanoJpaRepository.findByCorreoElectronico(correoElectronico)
                 .map(this::aDominio);
     }
 
@@ -58,26 +65,7 @@ public class ArtesanoRepositoryAdapter implements ArtesanoRepositoryPort {
         return artesanoJpaRepository.existsByCc(cc);
     }
 
-    private Artesano aDominio(ArtesanoEntity entity) {
-        return new Artesano(
-                entity.getId(),
-                entity.getNombre(),
-                entity.getCorreoElectronico(),
-                entity.getContrasena(),
-                entity.getCc(),
-                entity.getTelefono(),
-                entity.getNombreEmprendimiento(),
-                entity.getDescripcionCorta(),
-                entity.isActivo()
-        );
-    }
-    
     @Override
-    public Optional<Artesano> buscarPorCorreo(String correoElectronico) {
-        return artesanoJpaRepository.findByCorreoElectronico(correoElectronico)
-                .map(this::aDominio);
-    }
-        @Override
     public void cambiarEstadoActivo(Long id, boolean activo) {
         ArtesanoEntity entity = artesanoJpaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("El artesano no existe."));
@@ -91,9 +79,25 @@ public class ArtesanoRepositoryAdapter implements ArtesanoRepositoryPort {
                 entity.getTelefono(),
                 entity.getNombreEmprendimiento(),
                 entity.getDescripcionCorta(),
-                activo
+                activo,
+                entity.getLogo()
         );
 
         artesanoJpaRepository.save(actualizado);
+    }
+
+    private Artesano aDominio(ArtesanoEntity entity) {
+        return new Artesano(
+                entity.getId(),
+                entity.getNombre(),
+                entity.getCorreoElectronico(),
+                entity.getContrasena(),
+                entity.getCc(),
+                entity.getTelefono(),
+                entity.getNombreEmprendimiento(),
+                entity.getDescripcionCorta(),
+                entity.isActivo(),
+                entity.getLogo()
+        );
     }
 }

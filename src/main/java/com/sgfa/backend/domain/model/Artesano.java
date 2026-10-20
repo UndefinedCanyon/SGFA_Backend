@@ -11,10 +11,18 @@ public class Artesano {
     private String nombreEmprendimiento;
     private String descripcionCorta;
     private boolean activo;
+    private String logo;
 
     public Artesano(Long id, String nombre, String correoElectronico, String contrasena,
                      String cc, String telefono, String nombreEmprendimiento, String descripcionCorta,
                      boolean activo) {
+        this(id, nombre, correoElectronico, contrasena, cc, telefono,
+                nombreEmprendimiento, descripcionCorta, activo, null);
+    }
+
+    public Artesano(Long id, String nombre, String correoElectronico, String contrasena,
+                     String cc, String telefono, String nombreEmprendimiento, String descripcionCorta,
+                     boolean activo, String logo) {
         this.id = id;
         this.nombre = nombre;
         this.correoElectronico = correoElectronico;
@@ -24,6 +32,7 @@ public class Artesano {
         this.nombreEmprendimiento = nombreEmprendimiento;
         this.descripcionCorta = descripcionCorta;
         this.activo = activo;
+        this.logo = logo;
     }
 
     public Long getId() {
@@ -62,6 +71,10 @@ public class Artesano {
         return activo;
     }
 
+    public String getLogo() {
+        return logo;
+    }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
@@ -80,5 +93,9 @@ public class Artesano {
 
     public void setActivo(boolean activo) {
         this.activo = activo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
     }
 }
