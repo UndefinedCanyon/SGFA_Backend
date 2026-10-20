@@ -166,14 +166,28 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public AprobarSolicitudUseCase aprobarSolicitudUseCase(InscripcionRepositoryPort inscripcionRepositoryPort,
-                                                             EdicionFeriaRepositoryPort edicionFeriaRepositoryPort) {
-        return new AprobarSolicitudService(inscripcionRepositoryPort, edicionFeriaRepositoryPort);
+    public NotificadorSolicitud notificadorSolicitud(ArtesanoRepositoryPort artesanoRepositoryPort,
+                                                       EdicionFeriaRepositoryPort edicionFeriaRepositoryPort,
+                                                       FeriaRepositoryPort feriaRepositoryPort,
+                                                       LugarRepositoryPort lugarRepositoryPort,
+                                                       EnviadorCorreoPort enviadorCorreoPort,
+                                                       @Value("${APP_URL:http://localhost:5173}") String urlApp) {
+        return new NotificadorSolicitud(artesanoRepositoryPort, edicionFeriaRepositoryPort,
+                feriaRepositoryPort, lugarRepositoryPort, enviadorCorreoPort, urlApp);
     }
 
     @Bean
-    public RechazarSolicitudUseCase rechazarSolicitudUseCase(InscripcionRepositoryPort inscripcionRepositoryPort) {
-        return new RechazarSolicitudService(inscripcionRepositoryPort);
+    public AprobarSolicitudUseCase aprobarSolicitudUseCase(InscripcionRepositoryPort inscripcionRepositoryPort,
+                                                             EdicionFeriaRepositoryPort edicionFeriaRepositoryPort,
+                                                             NotificadorSolicitud notificadorSolicitud) {
+        return new AprobarSolicitudService(inscripcionRepositoryPort, edicionFeriaRepositoryPort,
+                notificadorSolicitud);
+    }
+
+    @Bean
+    public RechazarSolicitudUseCase rechazarSolicitudUseCase(InscripcionRepositoryPort inscripcionRepositoryPort,
+                                                               NotificadorSolicitud notificadorSolicitud) {
+        return new RechazarSolicitudService(inscripcionRepositoryPort, notificadorSolicitud);
     }
 
     @Bean
@@ -213,4 +227,4 @@ public class UseCaseConfig {
         return new RestablecerContrasenaService(tokenCuentaRepositoryPort, artesanoRepositoryPort,
                 cifradoContrasenaPort);
     }
-}
+}do

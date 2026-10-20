@@ -11,11 +11,14 @@ public class AprobarSolicitudService implements AprobarSolicitudUseCase {
 
     private final InscripcionRepositoryPort inscripcionRepositoryPort;
     private final EdicionFeriaRepositoryPort edicionFeriaRepositoryPort;
+    private final NotificadorSolicitud notificadorSolicitud;
 
     public AprobarSolicitudService(InscripcionRepositoryPort inscripcionRepositoryPort,
-                                    EdicionFeriaRepositoryPort edicionFeriaRepositoryPort) {
+                                    EdicionFeriaRepositoryPort edicionFeriaRepositoryPort,
+                                    NotificadorSolicitud notificadorSolicitud) {
         this.inscripcionRepositoryPort = inscripcionRepositoryPort;
         this.edicionFeriaRepositoryPort = edicionFeriaRepositoryPort;
+        this.notificadorSolicitud = notificadorSolicitud;
     }
 
     @Override
@@ -23,6 +26,7 @@ public class AprobarSolicitudService implements AprobarSolicitudUseCase {
         Inscripcion inscripcion = inscripcionRepositoryPort.buscarPorId(idInscripcion)
                 .orElseThrow(() -> new IllegalArgumentException("La solicitud no existe."));
 
+        // Ya aprobada: no se cuenta otra vez ni se vuelve a avisar.
         if ("APROBADA".equals(inscripcion.getEstado())) {
             return inscripcion;
         }
@@ -39,6 +43,9 @@ public class AprobarSolicitudService implements AprobarSolicitudUseCase {
         }
 
         inscripcion.setEstado("APROBADA");
-        return inscripcionRepositoryPort.guardar(inscripcion);
+        Inscripcion guardada = inscripcionRepositoryPort.guardar(inscripcion);
+
+        notificadorSolicitud.avisarAprobada(guardada);
+        return guardada;
     }
 }
