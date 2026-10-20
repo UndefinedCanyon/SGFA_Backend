@@ -20,6 +20,14 @@ services:
       retries: 20
       start_period: 20s
 
+  mailpit:
+    image: axllent/mailpit
+    container_name: sgfa-mailpit
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
   backend:
     build: .
     container_name: sgfa-backend
@@ -36,6 +44,14 @@ services:
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
       JPA_SHOW_SQL: ${JPA_SHOW_SQL:-false}
       SWAGGER_ENABLED: ${SWAGGER_ENABLED:-true}
+      APP_URL: ${APP_URL:-http://localhost:5173}
+      MAIL_FROM: ${MAIL_FROM:-SGFA <no-reply@sgfa.local>}
+      MAIL_HOST: ${MAIL_HOST:-mailpit}
+      MAIL_PORT: ${MAIL_PORT:-1025}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_AUTH: ${MAIL_AUTH:-false}
+      MAIL_STARTTLS: ${MAIL_STARTTLS:-false}
     ports:
       - "8080:8080"
     volumes:

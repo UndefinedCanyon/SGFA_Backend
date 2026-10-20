@@ -38,6 +38,9 @@ public class ArtesanoEntity {
     @Column(name = "logo")
     private String logo;
 
+    @Column(name = "correo_verificado", nullable = false)
+    private boolean correoVerificado;
+
     public ArtesanoEntity() {
     }
 
@@ -45,12 +48,19 @@ public class ArtesanoEntity {
                            String cc, String telefono, String nombreEmprendimiento, String descripcionCorta,
                            boolean activo) {
         this(id, nombre, correoElectronico, contrasena, cc, telefono,
-                nombreEmprendimiento, descripcionCorta, activo, null);
+                nombreEmprendimiento, descripcionCorta, activo, null, true);
     }
 
     public ArtesanoEntity(Long id, String nombre, String correoElectronico, String contrasena,
                            String cc, String telefono, String nombreEmprendimiento, String descripcionCorta,
                            boolean activo, String logo) {
+        this(id, nombre, correoElectronico, contrasena, cc, telefono,
+                nombreEmprendimiento, descripcionCorta, activo, logo, true);
+    }
+
+    public ArtesanoEntity(Long id, String nombre, String correoElectronico, String contrasena,
+                           String cc, String telefono, String nombreEmprendimiento, String descripcionCorta,
+                           boolean activo, String logo, boolean correoVerificado) {
         this.id = id;
         this.nombre = nombre;
         this.correoElectronico = correoElectronico;
@@ -61,6 +71,7 @@ public class ArtesanoEntity {
         this.descripcionCorta = descripcionCorta;
         this.activo = activo;
         this.logo = logo;
+        this.correoVerificado = correoVerificado;
     }
 
     public boolean isActivo() {
@@ -101,5 +112,9 @@ public class ArtesanoEntity {
 
     public String getLogo() {
         return logo;
+    }
+
+    public boolean isCorreoVerificado() {
+        return correoVerificado;
     }
 }

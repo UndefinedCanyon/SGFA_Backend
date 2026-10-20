@@ -12,17 +12,25 @@ public class Artesano {
     private String descripcionCorta;
     private boolean activo;
     private String logo;
+    private boolean correoVerificado;
 
     public Artesano(Long id, String nombre, String correoElectronico, String contrasena,
                      String cc, String telefono, String nombreEmprendimiento, String descripcionCorta,
                      boolean activo) {
         this(id, nombre, correoElectronico, contrasena, cc, telefono,
-                nombreEmprendimiento, descripcionCorta, activo, null);
+                nombreEmprendimiento, descripcionCorta, activo, null, true);
     }
 
     public Artesano(Long id, String nombre, String correoElectronico, String contrasena,
                      String cc, String telefono, String nombreEmprendimiento, String descripcionCorta,
                      boolean activo, String logo) {
+        this(id, nombre, correoElectronico, contrasena, cc, telefono,
+                nombreEmprendimiento, descripcionCorta, activo, logo, true);
+    }
+
+    public Artesano(Long id, String nombre, String correoElectronico, String contrasena,
+                     String cc, String telefono, String nombreEmprendimiento, String descripcionCorta,
+                     boolean activo, String logo, boolean correoVerificado) {
         this.id = id;
         this.nombre = nombre;
         this.correoElectronico = correoElectronico;
@@ -33,6 +41,7 @@ public class Artesano {
         this.descripcionCorta = descripcionCorta;
         this.activo = activo;
         this.logo = logo;
+        this.correoVerificado = correoVerificado;
     }
 
     public Long getId() {
@@ -75,8 +84,16 @@ public class Artesano {
         return logo;
     }
 
+    public boolean isCorreoVerificado() {
+        return correoVerificado;
+    }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 
     public void setTelefono(String telefono) {
@@ -97,5 +114,9 @@ public class Artesano {
 
     public void setLogo(String logo) {
         this.logo = logo;
+    }
+
+    public void setCorreoVerificado(boolean correoVerificado) {
+        this.correoVerificado = correoVerificado;
     }
 }

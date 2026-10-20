@@ -29,7 +29,8 @@ public class ArtesanoRepositoryAdapter implements ArtesanoRepositoryPort {
                 artesano.getNombreEmprendimiento(),
                 artesano.getDescripcionCorta(),
                 artesano.isActivo(),
-                artesano.getLogo()
+                artesano.getLogo(),
+                artesano.isCorreoVerificado()
         );
         ArtesanoEntity guardado = artesanoJpaRepository.save(entity);
         return aDominio(guardado);
@@ -80,7 +81,8 @@ public class ArtesanoRepositoryAdapter implements ArtesanoRepositoryPort {
                 entity.getNombreEmprendimiento(),
                 entity.getDescripcionCorta(),
                 activo,
-                entity.getLogo()
+                entity.getLogo(),
+                entity.isCorreoVerificado()
         );
 
         artesanoJpaRepository.save(actualizado);
@@ -97,7 +99,8 @@ public class ArtesanoRepositoryAdapter implements ArtesanoRepositoryPort {
                 entity.getNombreEmprendimiento(),
                 entity.getDescripcionCorta(),
                 entity.isActivo(),
-                entity.getLogo()
+                entity.getLogo(),
+                entity.isCorreoVerificado()
         );
     }
 }

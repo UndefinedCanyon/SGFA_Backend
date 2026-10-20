@@ -67,21 +67,33 @@ public class ArtesanoController {
         respuesta.put("descripcionCorta", artesano.getDescripcionCorta());
         respuesta.put("activo", artesano.isActivo());
         respuesta.put("logo", artesano.getLogo());
+        respuesta.put("correoVerificado", artesano.isCorreoVerificado());
         return respuesta;
     }
 
-    @PostMapping
-    public Map<String, Object> registrar(@RequestBody Map<String, String> body) {
-        Artesano creado = registrarArtesanoUseCase.registrar(
+    private Artesano registrar(Map<String, String> body, boolean correoVerificado) {
+        return registrarArtesanoUseCase.registrar(
                 body.get("nombre"),
                 body.get("correoElectronico"),
                 body.get("contrasena"),
                 body.get("cc"),
                 body.get("telefono"),
                 body.get("nombreEmprendimiento"),
-                body.get("descripcionCorta")
+                body.get("descripcionCorta"),
+                correoVerificado
         );
-        return aRespuesta(creado);
+    }
+
+    /** Registro público: la cuenta queda pendiente hasta que el artesano confirme su correo. */
+    @PostMapping
+    public Map<String, Object> registrarPublico(@RequestBody Map<String, String> body) {
+        return aRespuesta(registrar(body, false));
+    }
+
+    /** Registro por el administrador: la cuenta queda confirmada y no se envía correo. */
+    @PostMapping("/admin")
+    public Map<String, Object> registrarPorAdministrador(@RequestBody Map<String, String> body) {
+        return aRespuesta(registrar(body, true));
     }
 
     @GetMapping

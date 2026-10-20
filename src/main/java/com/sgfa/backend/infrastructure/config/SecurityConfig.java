@@ -86,6 +86,7 @@ public class SecurityConfig {
 
                         // Rutas públicas
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/*").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/artesanos").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/ferias").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/edicionesferia").permitAll()
@@ -104,6 +105,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/lugares").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.PUT, "/api/lugares/**").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.GET, "/api/artesanos").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST, "/api/artesanos/admin").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.GET, "/api/inscripciones").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.PUT, "/api/inscripciones/**").hasRole("ADMINISTRADOR")
 

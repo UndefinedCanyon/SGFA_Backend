@@ -35,6 +35,7 @@ CREATE TABLE artesano (
     nombre_emprendimiento VARCHAR(150) NOT NULL,
     descripcion_corta   VARCHAR(300),
 	logo                VARCHAR(64) NULL,
+	correo_verificado   BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT uq_artesano_correo UNIQUE (correo_electronico),
     CONSTRAINT uq_artesano_cc UNIQUE (cc)
 );
@@ -115,6 +116,24 @@ CREATE TABLE inscripcion (
         CHECK (estado IN ('PENDIENTE', 'APROBADA', 'RECHAZADA')),
     CONSTRAINT uq_inscripcion_unica
         UNIQUE (id_artesano, id_edicionferia)
+);
+
+-- ---------------------------------------------------------
+-- Tabla: token_cuenta (enlaces de confirmación y recuperación)
+-- ---------------------------------------------------------
+CREATE TABLE token_cuenta (
+    id_token     BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_artesano  BIGINT NOT NULL,
+    tipo         VARCHAR(20) NOT NULL,
+    token_hash   CHAR(64) NOT NULL,
+    creado_en    DATETIME NOT NULL,
+    expira_en    DATETIME NOT NULL,
+    usado        BOOLEAN NOT NULL DEFAULT FALSE,
+    CONSTRAINT fk_token_artesano
+        FOREIGN KEY (id_artesano) REFERENCES artesano(id_artesano) ON DELETE CASCADE,
+    CONSTRAINT uq_token_hash UNIQUE (token_hash),
+    CONSTRAINT chk_token_tipo CHECK (tipo IN ('VERIFICACION', 'RECUPERACION')),
+    INDEX idx_token_artesano_tipo (id_artesano, tipo)
 );
 USE sgfa_db;
 SHOW TABLES;

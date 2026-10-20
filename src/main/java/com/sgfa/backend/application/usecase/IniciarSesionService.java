@@ -1,5 +1,6 @@
 package com.sgfa.backend.application.usecase;
 
+import com.sgfa.backend.application.exception.CorreoNoVerificadoException;
 import com.sgfa.backend.application.exception.CredencialesInvalidasException;
 import com.sgfa.backend.application.port.in.IniciarSesionUseCase;
 import com.sgfa.backend.application.port.out.AdministradorRepositoryPort;
@@ -33,8 +34,9 @@ public class IniciarSesionService implements IniciarSesionUseCase {
 
     @Override
     public SesionIniciada iniciarSesion(String correoElectronico, String contrasena) {
+        String correo = DatosCuenta.normalizarCorreo(correoElectronico);
 
-        Optional<Artesano> artesanoEncontrado = artesanoRepositoryPort.buscarPorCorreo(correoElectronico);
+        Optional<Artesano> artesanoEncontrado = artesanoRepositoryPort.buscarPorCorreo(correo);
 
         if (artesanoEncontrado.isPresent()) {
             Artesano artesano = artesanoEncontrado.get();
@@ -44,12 +46,17 @@ public class IniciarSesionService implements IniciarSesionUseCase {
                 throw new CredencialesInvalidasException(MENSAJE_CREDENCIALES);
             }
 
+            if (!artesano.isCorreoVerificado()) {
+                throw new CorreoNoVerificadoException(
+                        "Debes confirmar tu correo electrónico antes de iniciar sesión. Revisa tu bandeja de entrada.");
+            }
+
             String token = generadorTokenPort.generar(artesano.getCorreoElectronico(), "ARTESANO", artesano.getId());
             return new SesionIniciada(artesano.getId(), artesano.getNombre(),
                     artesano.getCorreoElectronico(), "ARTESANO", token);
         }
 
-        Optional<Administrador> adminEncontrado = administradorRepositoryPort.buscarPorCorreo(correoElectronico);
+        Optional<Administrador> adminEncontrado = administradorRepositoryPort.buscarPorCorreo(correo);
 
         if (adminEncontrado.isPresent()) {
             Administrador admin = adminEncontrado.get();
