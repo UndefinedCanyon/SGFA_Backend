@@ -23,16 +23,25 @@ public class LugarEntity {
     @Column(name = "longitud")
     private Double longitud;
 
+    @Column(name = "activo", nullable = false)
+    private boolean activo;
+
     // JPA exige un constructor vacío
     public LugarEntity() {
     }
 
     public LugarEntity(Long id, String nombre, String direccion, Double latitud, Double longitud) {
+        this(id, nombre, direccion, latitud, longitud, true);
+    }
+
+    public LugarEntity(Long id, String nombre, String direccion, Double latitud, Double longitud,
+                        boolean activo) {
         this.id = id;
         this.nombre = nombre;
         this.direccion = direccion;
         this.latitud = latitud;
         this.longitud = longitud;
+        this.activo = activo;
     }
 
     public Long getId() {
@@ -53,5 +62,9 @@ public class LugarEntity {
 
     public Double getLongitud() {
         return longitud;
+    }
+
+    public boolean isActivo() {
+        return activo;
     }
 }

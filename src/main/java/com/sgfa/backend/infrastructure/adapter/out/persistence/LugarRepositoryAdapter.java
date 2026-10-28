@@ -24,7 +24,8 @@ public class LugarRepositoryAdapter implements LugarRepositoryPort {
                 lugar.getNombre(),
                 lugar.getDireccion(),
                 lugar.getLatitud(),
-                lugar.getLongitud()
+                lugar.getLongitud(),
+                lugar.isActivo()
         );
         LugarEntity guardada = lugarJpaRepository.save(entity);
         return aDominio(guardada);
@@ -50,7 +51,8 @@ public class LugarRepositoryAdapter implements LugarRepositoryPort {
                 entity.getNombre(),
                 entity.getDireccion(),
                 entity.getLatitud(),
-                entity.getLongitud()
+                entity.getLongitud(),
+                entity.isActivo()
         );
     }
 }

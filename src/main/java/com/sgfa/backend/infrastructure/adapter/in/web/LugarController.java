@@ -2,6 +2,7 @@ package com.sgfa.backend.infrastructure.adapter.in.web;
 
 import com.sgfa.backend.application.exception.DatoInvalidoException;
 import com.sgfa.backend.application.port.in.ActualizarLugarUseCase;
+import com.sgfa.backend.application.port.in.CambiarEstadoLugarUseCase;
 import com.sgfa.backend.application.port.in.ConsultarLugaresUseCase;
 import com.sgfa.backend.application.port.in.CrearLugarUseCase;
 import com.sgfa.backend.domain.model.Lugar;
@@ -16,25 +17,47 @@ import java.util.Map;
 public class LugarController {
 
     private final CrearLugarUseCase crearLugarUseCase;
-    private final ConsultarLugaresUseCase consultarLugaresUseCase;
     private final ActualizarLugarUseCase actualizarLugarUseCase;
+    private final CambiarEstadoLugarUseCase cambiarEstadoLugarUseCase;
+    private final ConsultarLugaresUseCase consultarLugaresUseCase;
 
     public LugarController(CrearLugarUseCase crearLugarUseCase,
-                            ConsultarLugaresUseCase consultarLugaresUseCase,
-                            ActualizarLugarUseCase actualizarLugarUseCase) {
+                            ActualizarLugarUseCase actualizarLugarUseCase,
+                            CambiarEstadoLugarUseCase cambiarEstadoLugarUseCase,
+                            ConsultarLugaresUseCase consultarLugaresUseCase) {
         this.crearLugarUseCase = crearLugarUseCase;
-        this.consultarLugaresUseCase = consultarLugaresUseCase;
         this.actualizarLugarUseCase = actualizarLugarUseCase;
+        this.cambiarEstadoLugarUseCase = cambiarEstadoLugarUseCase;
+        this.consultarLugaresUseCase = consultarLugaresUseCase;
     }
 
     @PostMapping
     public Lugar crear(@RequestBody Map<String, Object> body) {
         return crearLugarUseCase.crear(
-                leerTexto(body, "nombre"),
-                leerTexto(body, "direccion"),
-                leerCoordenada(body, "latitud", "La latitud"),
-                leerCoordenada(body, "longitud", "La longitud")
+                aTexto(body.get("nombre")),
+                aTexto(body.get("direccion")),
+                aNumero(body.get("latitud")),
+                aNumero(body.get("longitud"))
         );
+    }
+
+    @PutMapping("/{id}")
+    public Lugar actualizar(@PathVariable Long id, @RequestBody Map<String, Object> body) {
+        return actualizarLugarUseCase.actualizar(
+                id,
+                aTexto(body.get("nombre")),
+                aTexto(body.get("direccion")),
+                aNumero(body.get("latitud")),
+                aNumero(body.get("longitud"))
+        );
+    }
+
+    @PutMapping("/{id}/estado")
+    public void cambiarEstado(@PathVariable Long id, @RequestBody Map<String, Object> body) {
+        if (!(body.get("activo") instanceof Boolean activo)) {
+            throw new DatoInvalidoException("Indica si el lugar queda activo o inactivo.");
+        }
+        cambiarEstadoLugarUseCase.cambiarEstado(id, activo);
     }
 
     @GetMapping
@@ -42,32 +65,18 @@ public class LugarController {
         return consultarLugaresUseCase.consultarTodos();
     }
 
-    @PutMapping("/{id}")
-    public Lugar actualizar(@PathVariable Long id, @RequestBody Map<String, Object> body) {
-        return actualizarLugarUseCase.actualizar(
-                id,
-                leerTexto(body, "nombre"),
-                leerTexto(body, "direccion"),
-                leerCoordenada(body, "latitud", "La latitud"),
-                leerCoordenada(body, "longitud", "La longitud")
-        );
-    }
-
-    private String leerTexto(Map<String, Object> body, String clave) {
-        Object valor = body.get(clave);
+    private String aTexto(Object valor) {
         return valor == null ? null : valor.toString();
     }
 
-    private Double leerCoordenada(Map<String, Object> body, String clave, String etiqueta) {
-        Object valor = body.get(clave);
-        if (valor == null || valor.toString().isBlank()) {
+    private Double aNumero(Object valor) {
+        if (valor == null) {
             return null;
         }
-        try {
-            return Double.valueOf(valor.toString().trim());
-        } catch (NumberFormatException ex) {
-            throw new DatoInvalidoException(etiqueta + " no es un número válido.");
+        if (valor instanceof Number numero) {
+            return numero.doubleValue();
         }
+        throw new DatoInvalidoException("La latitud y la longitud deben ser números.");
     }
 
     @ExceptionHandler(DatoInvalidoException.class)

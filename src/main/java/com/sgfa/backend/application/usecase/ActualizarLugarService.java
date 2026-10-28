@@ -13,16 +13,16 @@ public class ActualizarLugarService implements ActualizarLugarUseCase {
     }
 
     @Override
-    public Lugar actualizar(Long idLugar, String nombre, String direccion, Double latitud, Double longitud) {
-        ValidacionLugar.validarTextos(nombre, direccion);
-        ValidacionLugar.validarUbicacion(latitud, longitud);
-
-        Lugar lugar = lugarRepositoryPort.buscarPorId(idLugar)
+    public Lugar actualizar(Long id, String nombre, String direccion, Double latitud, Double longitud) {
+        Lugar lugar = lugarRepositoryPort.buscarPorId(id)
                 .orElseThrow(() -> new IllegalArgumentException("El lugar no existe."));
+
+        ValidadorLugar.validar(nombre, direccion, latitud, longitud);
 
         lugar.setNombre(nombre.trim());
         lugar.setDireccion(direccion.trim());
-        lugar.setUbicacion(ValidacionLugar.redondear(latitud), ValidacionLugar.redondear(longitud));
+        lugar.setLatitud(latitud);
+        lugar.setLongitud(longitud);
 
         return lugarRepositoryPort.guardar(lugar);
     }

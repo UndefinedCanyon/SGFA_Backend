@@ -7,13 +7,19 @@ public class Lugar {
     private String direccion;
     private Double latitud;
     private Double longitud;
+    private boolean activo;
 
     public Lugar(Long id, String nombre, String direccion, Double latitud, Double longitud) {
+        this(id, nombre, direccion, latitud, longitud, true);
+    }
+
+    public Lugar(Long id, String nombre, String direccion, Double latitud, Double longitud, boolean activo) {
         this.id = id;
         this.nombre = nombre;
         this.direccion = direccion;
         this.latitud = latitud;
         this.longitud = longitud;
+        this.activo = activo;
     }
 
     public Long getId() {
@@ -36,12 +42,28 @@ public class Lugar {
         return longitud;
     }
 
+    public boolean isActivo() {
+        return activo;
+    }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
     public void setDireccion(String direccion) {
         this.direccion = direccion;
+    }
+
+    public void setLatitud(Double latitud) {
+        this.latitud = latitud;
+    }
+
+    public void setLongitud(Double longitud) {
+        this.longitud = longitud;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 
     public void setUbicacion(Double latitud, Double longitud) {

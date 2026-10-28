@@ -3,9 +3,9 @@ package com.sgfa.backend.infrastructure.config;
 import com.sgfa.backend.application.port.in.*;
 import com.sgfa.backend.application.port.out.*;
 import com.sgfa.backend.application.usecase.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 public class UseCaseConfig {
@@ -24,6 +24,11 @@ public class UseCaseConfig {
     @Bean
     public ActualizarLugarUseCase actualizarLugarUseCase(LugarRepositoryPort lugarRepositoryPort) {
         return new ActualizarLugarService(lugarRepositoryPort);
+    }
+
+    @Bean
+    public CambiarEstadoLugarUseCase cambiarEstadoLugarUseCase(LugarRepositoryPort lugarRepositoryPort) {
+        return new CambiarEstadoLugarService(lugarRepositoryPort);
     }
 
     // ---------- Artesanos y sesión ----------
@@ -60,6 +65,46 @@ public class UseCaseConfig {
         return new CambiarEstadoArtesanoService(artesanoRepositoryPort);
     }
 
+    @Bean
+    public GestionarLogoArtesanoUseCase gestionarLogoArtesanoUseCase(ArtesanoRepositoryPort artesanoRepositoryPort,
+                                                                       AlmacenImagenesPort almacenImagenesPort) {
+        return new GestionarLogoArtesanoService(artesanoRepositoryPort, almacenImagenesPort);
+    }
+
+    // ---------- Confirmación de correo y recuperación de contraseña ----------
+    @Bean
+    public NotificadorCuenta notificadorCuenta(TokenCuentaRepositoryPort tokenCuentaRepositoryPort,
+                                                 EnviadorCorreoPort enviadorCorreoPort,
+                                                 @Value("${APP_URL:http://localhost:5173}") String urlApp) {
+        return new NotificadorCuenta(tokenCuentaRepositoryPort, enviadorCorreoPort, urlApp);
+    }
+
+    @Bean
+    public VerificarCorreoUseCase verificarCorreoUseCase(TokenCuentaRepositoryPort tokenCuentaRepositoryPort,
+                                                           ArtesanoRepositoryPort artesanoRepositoryPort) {
+        return new VerificarCorreoService(tokenCuentaRepositoryPort, artesanoRepositoryPort);
+    }
+
+    @Bean
+    public ReenviarVerificacionUseCase reenviarVerificacionUseCase(ArtesanoRepositoryPort artesanoRepositoryPort,
+                                                                     NotificadorCuenta notificadorCuenta) {
+        return new ReenviarVerificacionService(artesanoRepositoryPort, notificadorCuenta);
+    }
+
+    @Bean
+    public SolicitarRecuperacionUseCase solicitarRecuperacionUseCase(ArtesanoRepositoryPort artesanoRepositoryPort,
+                                                                       NotificadorCuenta notificadorCuenta) {
+        return new SolicitarRecuperacionService(artesanoRepositoryPort, notificadorCuenta);
+    }
+
+    @Bean
+    public RestablecerContrasenaUseCase restablecerContrasenaUseCase(TokenCuentaRepositoryPort tokenCuentaRepositoryPort,
+                                                                       ArtesanoRepositoryPort artesanoRepositoryPort,
+                                                                       CifradoContrasenaPort cifradoContrasenaPort) {
+        return new RestablecerContrasenaService(tokenCuentaRepositoryPort, artesanoRepositoryPort,
+                cifradoContrasenaPort);
+    }
+
     // ---------- Ferias ----------
     @Bean
     public CrearFeriaUseCase crearFeriaUseCase(FeriaRepositoryPort feriaRepositoryPort) {
@@ -83,8 +128,9 @@ public class UseCaseConfig {
 
     // ---------- Ediciones ----------
     @Bean
-    public CrearEdicionFeriaUseCase crearEdicionFeriaUseCase(EdicionFeriaRepositoryPort edicionFeriaRepositoryPort) {
-        return new CrearEdicionFeriaService(edicionFeriaRepositoryPort);
+    public CrearEdicionFeriaUseCase crearEdicionFeriaUseCase(EdicionFeriaRepositoryPort edicionFeriaRepositoryPort,
+                                                               LugarRepositoryPort lugarRepositoryPort) {
+        return new CrearEdicionFeriaService(edicionFeriaRepositoryPort, lugarRepositoryPort);
     }
 
     @Bean
@@ -120,7 +166,7 @@ public class UseCaseConfig {
                 productoRepositoryPort, edicionFeriaRepositoryPort);
     }
 
-    // ---------- Productos ----------
+    // ---------- Productos e imágenes ----------
     @Bean
     public RegistrarProductoUseCase registrarProductoUseCase(ProductoRepositoryPort productoRepositoryPort) {
         return new RegistrarProductoService(productoRepositoryPort);
@@ -138,15 +184,14 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public GestionarImagenProductoUseCase gestionarImagenProductoUseCase(ProductoRepositoryPort productoRepositoryPort,
-                                                                           AlmacenImagenesPort almacenImagenesPort) {
-        return new GestionarImagenProductoService(productoRepositoryPort, almacenImagenesPort);
+    public ConsultarProductosUseCase consultarProductosUseCase(ProductoRepositoryPort productoRepositoryPort) {
+        return new ConsultarProductosService(productoRepositoryPort);
     }
 
     @Bean
-    public GestionarLogoArtesanoUseCase gestionarLogoArtesanoUseCase(ArtesanoRepositoryPort artesanoRepositoryPort,
-                                                                       AlmacenImagenesPort almacenImagenesPort) {
-        return new GestionarLogoArtesanoService(artesanoRepositoryPort, almacenImagenesPort);
+    public GestionarImagenProductoUseCase gestionarImagenProductoUseCase(ProductoRepositoryPort productoRepositoryPort,
+                                                                           AlmacenImagenesPort almacenImagenesPort) {
+        return new GestionarImagenProductoService(productoRepositoryPort, almacenImagenesPort);
     }
 
     @Bean
@@ -154,17 +199,7 @@ public class UseCaseConfig {
         return new ConsultarImagenService(almacenImagenesPort);
     }
 
-    @Bean
-    public ConsultarProductosUseCase consultarProductosUseCase(ProductoRepositoryPort productoRepositoryPort) {
-        return new ConsultarProductosService(productoRepositoryPort);
-    }
-
     // ---------- Inscripciones ----------
-    @Bean
-    public SolicitarParticipacionUseCase solicitarParticipacionUseCase(InscripcionRepositoryPort inscripcionRepositoryPort) {
-        return new SolicitarParticipacionService(inscripcionRepositoryPort);
-    }
-
     @Bean
     public NotificadorSolicitud notificadorSolicitud(ArtesanoRepositoryPort artesanoRepositoryPort,
                                                        EdicionFeriaRepositoryPort edicionFeriaRepositoryPort,
@@ -174,6 +209,11 @@ public class UseCaseConfig {
                                                        @Value("${APP_URL:http://localhost:5173}") String urlApp) {
         return new NotificadorSolicitud(artesanoRepositoryPort, edicionFeriaRepositoryPort,
                 feriaRepositoryPort, lugarRepositoryPort, enviadorCorreoPort, urlApp);
+    }
+
+    @Bean
+    public SolicitarParticipacionUseCase solicitarParticipacionUseCase(InscripcionRepositoryPort inscripcionRepositoryPort) {
+        return new SolicitarParticipacionService(inscripcionRepositoryPort);
     }
 
     @Bean
@@ -194,37 +234,4 @@ public class UseCaseConfig {
     public ConsultarSolicitudesUseCase consultarSolicitudesUseCase(InscripcionRepositoryPort inscripcionRepositoryPort) {
         return new ConsultarSolicitudesService(inscripcionRepositoryPort);
     }
-
-    @Bean
-    public NotificadorCuenta notificadorCuenta(TokenCuentaRepositoryPort tokenCuentaRepositoryPort,
-                                                 EnviadorCorreoPort enviadorCorreoPort,
-                                                 @Value("${APP_URL:http://localhost:5173}") String urlApp) {
-        return new NotificadorCuenta(tokenCuentaRepositoryPort, enviadorCorreoPort, urlApp);
-    }
-
-    @Bean
-    public VerificarCorreoUseCase verificarCorreoUseCase(TokenCuentaRepositoryPort tokenCuentaRepositoryPort,
-                                                           ArtesanoRepositoryPort artesanoRepositoryPort) {
-        return new VerificarCorreoService(tokenCuentaRepositoryPort, artesanoRepositoryPort);
-    }
-
-    @Bean
-    public ReenviarVerificacionUseCase reenviarVerificacionUseCase(ArtesanoRepositoryPort artesanoRepositoryPort,
-                                                                     NotificadorCuenta notificadorCuenta) {
-        return new ReenviarVerificacionService(artesanoRepositoryPort, notificadorCuenta);
-    }
-
-    @Bean
-    public SolicitarRecuperacionUseCase solicitarRecuperacionUseCase(ArtesanoRepositoryPort artesanoRepositoryPort,
-                                                                       NotificadorCuenta notificadorCuenta) {
-        return new SolicitarRecuperacionService(artesanoRepositoryPort, notificadorCuenta);
-    }
-
-    @Bean
-    public RestablecerContrasenaUseCase restablecerContrasenaUseCase(TokenCuentaRepositoryPort tokenCuentaRepositoryPort,
-                                                                       ArtesanoRepositoryPort artesanoRepositoryPort,
-                                                                       CifradoContrasenaPort cifradoContrasenaPort) {
-        return new RestablecerContrasenaService(tokenCuentaRepositoryPort, artesanoRepositoryPort,
-                cifradoContrasenaPort);
-    }
-}do
+}

@@ -14,16 +14,9 @@ public class CrearLugarService implements CrearLugarUseCase {
 
     @Override
     public Lugar crear(String nombre, String direccion, Double latitud, Double longitud) {
-        ValidacionLugar.validarTextos(nombre, direccion);
-        ValidacionLugar.validarUbicacion(latitud, longitud);
+        ValidadorLugar.validar(nombre, direccion, latitud, longitud);
 
-        Lugar nuevoLugar = new Lugar(
-                null,
-                nombre.trim(),
-                direccion.trim(),
-                ValidacionLugar.redondear(latitud),
-                ValidacionLugar.redondear(longitud)
-        );
+        Lugar nuevoLugar = new Lugar(null, nombre.trim(), direccion.trim(), latitud, longitud);
         return lugarRepositoryPort.guardar(nuevoLugar);
     }
 }
