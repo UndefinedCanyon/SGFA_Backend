@@ -55,13 +55,42 @@ public class ProductoController {
         }
     }
 
+    private String leerTexto(Map<String, Object> body, String campo) {
+        Object valor = body.get(campo);
+        return valor == null ? null : valor.toString();
+    }
+
+    private BigDecimal leerPrecio(Map<String, Object> body) {
+        Object valor = body.get("precio");
+        if (valor == null) {
+            return null;
+        }
+        try {
+            return new BigDecimal(valor.toString().trim());
+        } catch (NumberFormatException e) {
+            throw new DatoInvalidoException("El precio no es un número válido.");
+        }
+    }
+
+    private Integer leerCantidad(Map<String, Object> body) {
+        Object valor = body.get("cantidad");
+        if (valor == null) {
+            return null;
+        }
+        try {
+            return Integer.valueOf(valor.toString().trim());
+        } catch (NumberFormatException e) {
+            throw new DatoInvalidoException("La cantidad debe ser un número entero.");
+        }
+    }
+
     @PostMapping
     public Producto registrar(@RequestBody Map<String, Object> body) {
         UsuarioAutenticado usuario = obtenerUsuarioAutenticado();
 
-        String nombre = (String) body.get("nombre");
-        BigDecimal precio = new BigDecimal(body.get("precio").toString());
-        Integer cantidad = Integer.valueOf(body.get("cantidad").toString());
+        String nombre = leerTexto(body, "nombre");
+        BigDecimal precio = leerPrecio(body);
+        Integer cantidad = leerCantidad(body);
 
         return registrarProductoUseCase.registrar(nombre, precio, cantidad, usuario.getId());
     }
@@ -76,9 +105,9 @@ public class ProductoController {
     public Producto actualizar(@PathVariable Long id, @RequestBody Map<String, Object> body) {
         UsuarioAutenticado usuario = obtenerUsuarioAutenticado();
 
-        String nombre = (String) body.get("nombre");
-        BigDecimal precio = new BigDecimal(body.get("precio").toString());
-        Integer cantidad = Integer.valueOf(body.get("cantidad").toString());
+        String nombre = leerTexto(body, "nombre");
+        BigDecimal precio = leerPrecio(body);
+        Integer cantidad = leerCantidad(body);
 
         return actualizarProductoUseCase.actualizar(id, nombre, precio, cantidad, usuario.getId());
     }

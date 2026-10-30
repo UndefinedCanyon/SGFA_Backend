@@ -16,7 +16,9 @@ public class RegistrarProductoService implements RegistrarProductoUseCase {
 
     @Override
     public Producto registrar(String nombre, BigDecimal precio, Integer cantidad, Long idArtesano) {
-        Producto nuevoProducto = new Producto(null, nombre, precio, cantidad, idArtesano);
+        ValidadorProducto.validar(nombre, precio, cantidad);
+
+        Producto nuevoProducto = new Producto(null, nombre.trim(), precio, cantidad, idArtesano);
         return productoRepositoryPort.guardar(nuevoProducto);
     }
 }

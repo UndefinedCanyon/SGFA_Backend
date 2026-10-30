@@ -1,6 +1,7 @@
 package com.sgfa.backend.application.usecase;
 
 import com.sgfa.backend.application.exception.AccesoNoAutorizadoException;
+import com.sgfa.backend.application.exception.DatoInvalidoException;
 import com.sgfa.backend.application.port.out.AlmacenImagenesPort;
 import com.sgfa.backend.application.port.out.ProductoRepositoryPort;
 import com.sgfa.backend.domain.model.Producto;
@@ -76,6 +77,31 @@ class ProductosServiceTest {
 
             assertSame(conId, servicio.registrar("Bolso", new BigDecimal("50000"), 3, DUENO));
         }
+
+        @Test
+        @DisplayName("Guarda el nombre sin espacios sobrantes")
+        void recorta_el_nombre() {
+            RegistrarProductoService servicio = new RegistrarProductoService(productoRepositoryPort);
+            when(productoRepositoryPort.guardar(any(Producto.class))).thenAnswer(inv -> inv.getArgument(0));
+
+            Producto resultado = servicio.registrar("  Bolso  ", new BigDecimal("50000"), 3, DUENO);
+
+            assertEquals("Bolso", resultado.getNombre());
+        }
+
+        @Test
+        @DisplayName("Un producto con datos inválidos no se guarda")
+        void datos_invalidos() {
+            RegistrarProductoService servicio = new RegistrarProductoService(productoRepositoryPort);
+
+            assertThrows(DatoInvalidoException.class, () -> servicio.registrar(" ", new BigDecimal("50000"), 3, DUENO));
+            assertThrows(DatoInvalidoException.class, () -> servicio.registrar("Bolso", null, 3, DUENO));
+            assertThrows(DatoInvalidoException.class, () -> servicio.registrar("Bolso", new BigDecimal("-1"), 3, DUENO));
+            assertThrows(DatoInvalidoException.class, () -> servicio.registrar("Bolso", new BigDecimal("50000"), null, DUENO));
+            assertThrows(DatoInvalidoException.class, () -> servicio.registrar("Bolso", new BigDecimal("50000"), -2, DUENO));
+
+            verifyNoInteractions(productoRepositoryPort);
+        }
     }
 
     @Nested
@@ -109,6 +135,34 @@ class ProductosServiceTest {
                     () -> servicio().actualizar(5L, "Robado", BigDecimal.ONE, 1, OTRO_ARTESANO));
 
             verify(productoRepositoryPort, never()).guardar(any());
+        }
+
+        @Test
+        @DisplayName("Datos inválidos se rechazan sin modificar ni guardar el producto")
+        void datos_invalidos() {
+            Producto original = producto("foto.jpg");
+            when(productoRepositoryPort.buscarPorId(5L)).thenReturn(Optional.of(original));
+
+            assertThrows(DatoInvalidoException.class,
+                    () -> servicio().actualizar(5L, "", new BigDecimal("75000"), 10, DUENO));
+            assertThrows(DatoInvalidoException.class,
+                    () -> servicio().actualizar(5L, "Bolso grande", BigDecimal.ZERO, 10, DUENO));
+            assertThrows(DatoInvalidoException.class,
+                    () -> servicio().actualizar(5L, "Bolso grande", new BigDecimal("75000"), null, DUENO));
+
+            assertEquals("Bolso", original.getNombre());
+            assertEquals(new BigDecimal("50000"), original.getPrecio());
+            assertEquals(3, original.getCantidad());
+            verify(productoRepositoryPort, never()).guardar(any());
+        }
+
+        @Test
+        @DisplayName("Un artesano ajeno recibe la negativa de permiso antes que el error de datos")
+        void permiso_antes_que_validacion() {
+            when(productoRepositoryPort.buscarPorId(5L)).thenReturn(Optional.of(producto(null)));
+
+            assertThrows(AccesoNoAutorizadoException.class,
+                    () -> servicio().actualizar(5L, "", BigDecimal.ONE, 1, OTRO_ARTESANO));
         }
 
         @Test

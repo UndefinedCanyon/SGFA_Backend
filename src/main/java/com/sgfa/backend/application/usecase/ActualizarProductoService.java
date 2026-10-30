@@ -24,7 +24,9 @@ public class ActualizarProductoService implements ActualizarProductoUseCase {
             throw new AccesoNoAutorizadoException("No tienes permiso para modificar este producto.");
         }
 
-        producto.setNombre(nombre);
+        ValidadorProducto.validar(nombre, precio, cantidad);
+
+        producto.setNombre(nombre.trim());
         producto.setPrecio(precio);
         producto.setCantidad(cantidad);
 
