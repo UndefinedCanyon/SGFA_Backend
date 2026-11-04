@@ -1,5 +1,4 @@
 package com.sgfa.backend.infrastructure.config;
-
 import com.sgfa.backend.infrastructure.security.JwtAuthFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,57 +18,50 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
     private final JwtAuthFilter jwtAuthFilter;
     private final String origenesPermitidos;
-
     public SecurityConfig(JwtAuthFilter jwtAuthFilter,
                           @Value("${CORS_ORIGINS:http://localhost:5173}") String origenesPermitidos) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.origenesPermitidos = origenesPermitidos;
     }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
     // Usuarios vacíos a propósito: la autenticación es solo por JWT. Definir este bean evita que
     // Spring cree un usuario de prueba con una contraseña generada que se imprime en el log.
     @Bean
     public UserDetailsService userDetailsService() {
         return new InMemoryUserDetailsManager();
     }
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         List<String> origenes = Arrays.stream(origenesPermitidos.split(","))
                 .map(String::trim)
                 .filter(origen -> !origen.isEmpty())
                 .toList();
-
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(origenes);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", config);
         return source;
     }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // CSRF desactivado a propósito: la API no usa sesiones ni cookies (es STATELESS) y la
+                // identidad viaja en el encabezado Authorization (JWT), que el navegador no envía solo
+                // desde otro sitio. Si algún día el token pasara a una cookie, hay que reactivarlo.
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(excepciones -> excepciones
@@ -83,7 +75,6 @@ public class SecurityConfig {
                         // Documentación y página de error
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/error").permitAll()
-
                         // Rutas públicas
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/*").permitAll()
@@ -94,7 +85,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/edicionesferia/*/ocupacion").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/lugares").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/imagenes/*").permitAll()
-
                         // Solo el administrador
                         .requestMatchers(HttpMethod.POST, "/api/ferias").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.GET, "/api/ferias/todas").hasRole("ADMINISTRADOR")
@@ -108,7 +98,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/artesanos/admin").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.GET, "/api/inscripciones").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.PUT, "/api/inscripciones/**").hasRole("ADMINISTRADOR")
-
                         // Solo el artesano (el orden importa: el perfil va antes de PUT /api/artesanos/**)
                         .requestMatchers(HttpMethod.GET, "/api/artesanos/perfil").hasRole("ARTESANO")
                         .requestMatchers(HttpMethod.PUT, "/api/artesanos/perfil").hasRole("ARTESANO")
@@ -121,14 +110,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasRole("ARTESANO")
                         .requestMatchers(HttpMethod.POST, "/api/inscripciones").hasRole("ARTESANO")
                         .requestMatchers(HttpMethod.GET, "/api/inscripciones/mias").hasRole("ARTESANO")
-
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
-
     private void escribirError(HttpServletResponse response, HttpStatus estado, String mensaje) throws IOException {
         response.setStatus(estado.value());
         response.setContentType("application/json;charset=UTF-8");
