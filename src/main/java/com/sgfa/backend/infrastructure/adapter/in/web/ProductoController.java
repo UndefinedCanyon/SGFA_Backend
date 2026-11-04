@@ -8,9 +8,9 @@ import com.sgfa.backend.application.port.in.EliminarProductoUseCase;
 import com.sgfa.backend.application.port.in.GestionarImagenProductoUseCase;
 import com.sgfa.backend.application.port.in.RegistrarProductoUseCase;
 import com.sgfa.backend.domain.model.Producto;
+import com.sgfa.backend.infrastructure.security.SesionActual;
 import com.sgfa.backend.infrastructure.security.UsuarioAutenticado;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,9 +42,7 @@ public class ProductoController {
     }
 
     private UsuarioAutenticado obtenerUsuarioAutenticado() {
-        return (UsuarioAutenticado) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
+        return SesionActual.usuario();
     }
 
     private byte[] leerBytes(MultipartFile archivo) {

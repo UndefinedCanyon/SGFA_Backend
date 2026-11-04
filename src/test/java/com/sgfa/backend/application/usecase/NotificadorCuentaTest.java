@@ -13,7 +13,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -82,7 +81,7 @@ class NotificadorCuentaTest {
         assertFalse(token.isUsado());
         assertEquals(TokenSeguro.hash(tokenPlano), token.getTokenHash());
         assertNotEquals(tokenPlano, token.getTokenHash());
-        assertEquals(Duration.ofHours(24), Duration.between(token.getCreadoEn(), token.getExpiraEn()));
+        assertEquals(token.getCreadoEn().plusHours(24), token.getExpiraEn());
     }
 
     @Test
@@ -118,7 +117,7 @@ class NotificadorCuentaTest {
 
         assertEquals(TipoTokenCuenta.RECUPERACION, token.getTipo());
         assertEquals(TokenSeguro.hash(tokenPlano), token.getTokenHash());
-        assertEquals(Duration.ofHours(1), Duration.between(token.getCreadoEn(), token.getExpiraEn()));
+        assertEquals(token.getCreadoEn().plusHours(1), token.getExpiraEn());
     }
 
     @Test

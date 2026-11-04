@@ -8,7 +8,9 @@ import java.util.regex.Pattern;
 
 final class DatosCuenta {
 
-    private static final Pattern CORREO = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
+    // Cada etiqueta del dominio excluye el punto, así no hay forma de que la expresión retroceda
+    // y se ejecuta en tiempo lineal.
+    private static final Pattern CORREO = Pattern.compile("^[^@\\s]+@[^@\\s.]+(\\.[^@\\s.]+)+$");
     private static final int LARGO_MINIMO_CONTRASENA = 8;
     private static final int BYTES_MAXIMOS_CONTRASENA = 72;
 
