@@ -8,8 +8,30 @@ on:
 
 jobs:
   pruebas:
-    name: Pruebas de arquitectura
+    name: Pruebas (arquitectura y unitarias)
     runs-on: ubuntu-latest
+
+    # El test BackendApplicationTests arranca toda la aplicación y necesita una base MySQL.
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: clave-solo-para-ci
+          MYSQL_DATABASE: sgfa_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pclave-solo-para-ci --silent"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    env:
+      DB_PASSWORD: clave-solo-para-ci
+      JWT_SECRET: secreto-solo-para-ci-que-no-se-usa-en-produccion-0123456789
+      # Sin GEMINI_API_KEY el asistente usa el modo demostración: las pruebas no gastan cuota de Google.
+      GEMINI_API_KEY: ""
+
     steps:
       - uses: actions/checkout@v7
 
@@ -21,6 +43,7 @@ jobs:
 
       - name: Dar permiso de ejecución a mvnw
         run: chmod +x mvnw
+
       - name: Verificar que los scripts SQL fijan la codificación
         run: |
           for f in database/*.sql; do
@@ -29,8 +52,18 @@ jobs:
               exit 1
             fi
           done
-      - name: Ejecutar pruebas de arquitectura
-        run: ./mvnw -B test -Dtest=ArquitecturaHexagonalTest
+
+      - name: Ejecutar todas las pruebas (incluye arquitectura hexagonal)
+        run: ./mvnw -B verify
+
+      - name: Guardar el informe de cobertura
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: cobertura-backend
+          path: target/site/jacoco
+          if-no-files-found: ignore
+          retention-days: 14
 
   imagen:
     name: Construir imagen Docker
