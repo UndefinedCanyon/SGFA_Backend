@@ -11,10 +11,11 @@ RUN --mount=type=cache,target=/root/.m2 mvn -B -DskipTests package
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 RUN useradd --system --create-home spring \
-    && mkdir -p /data/imagenes \
-    && chown spring:spring /data/imagenes
+    && mkdir -p /data/imagenes /data/logs \
+    && chown spring:spring /data/imagenes /data/logs
 COPY --from=build /app/target/*.jar app.jar
 USER spring
 ENV IMAGENES_DIR=/data/imagenes
+ENV LOG_DIR=/data/logs
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

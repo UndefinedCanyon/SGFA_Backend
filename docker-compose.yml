@@ -59,6 +59,7 @@ services:
       - "8080:8080"
     volumes:
       - imagenes_data:/data/imagenes
+      - ${LOGS_PATH:-logs_data}:/data/logs
     stop_grace_period: 30s
 
   frontend:
@@ -76,3 +77,4 @@ services:
 volumes:
   db_data:
   imagenes_data:
+  logs_data:
