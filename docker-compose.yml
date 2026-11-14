@@ -52,6 +52,9 @@ services:
       MAIL_PASSWORD: ${MAIL_PASSWORD:-}
       MAIL_AUTH: ${MAIL_AUTH:-false}
       MAIL_STARTTLS: ${MAIL_STARTTLS:-false}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      ASISTENTE_PROVEEDOR: ${ASISTENTE_PROVEEDOR:-auto}
     ports:
       - "8080:8080"
     volumes:

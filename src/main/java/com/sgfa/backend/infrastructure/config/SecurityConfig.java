@@ -98,6 +98,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/artesanos/admin").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.GET, "/api/inscripciones").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.PUT, "/api/inscripciones/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST, "/api/asistente/**").hasRole("ADMINISTRADOR")
                         // Solo el artesano (el orden importa: el perfil va antes de PUT /api/artesanos/**)
                         .requestMatchers(HttpMethod.GET, "/api/artesanos/perfil").hasRole("ARTESANO")
                         .requestMatchers(HttpMethod.PUT, "/api/artesanos/perfil").hasRole("ARTESANO")
