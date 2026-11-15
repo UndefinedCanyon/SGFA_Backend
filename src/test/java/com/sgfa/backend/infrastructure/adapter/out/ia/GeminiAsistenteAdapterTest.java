@@ -243,4 +243,100 @@ class GeminiAsistenteAdapterTest {
         assertTrue(mensaje.contains("Cupo: sin límite. Aprobados hasta ahora: 2"));
         assertTrue(mensaje.contains("Descripción: (vacío)"));
     }
+
+    // ------------------------------------------------- tolerancia a fallos
+
+    private static final String URL_RESPALDO = "https://gemini.test/v1beta/models/modelo-respaldo:generateContent";
+    private static final String JSON_OK = "{\"resumen\":\"Todo bien\",\"sugerencias\":[]}";
+
+    private GeminiAsistenteAdapter resiliente(MockRestServiceServer[] salida, String respaldo) {
+        RestClient.Builder constructor = RestClient.builder().baseUrl("https://gemini.test/v1beta");
+        salida[0] = MockRestServiceServer.bindTo(constructor).build();
+        return new GeminiAsistenteAdapter(constructor.build(), "modelo-x", respaldo, 0);
+    }
+
+    @Test
+    @DisplayName("si Gemini está saturado (503) reintenta y usa la respuesta del segundo intento")
+    void reintenta_ante_503() {
+        MockRestServiceServer[] s = new MockRestServiceServer[1];
+        GeminiAsistenteAdapter a = resiliente(s, "modelo-respaldo");
+        s[0].expect(requestTo(URL)).andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE));
+        s[0].expect(requestTo(URL)).andRespond(withSuccess(respuestaGemini(JSON_OK), MediaType.APPLICATION_JSON));
+
+        ResultadoAsistente r = a.priorizarSolicitudes(contexto, solicitudes);
+
+        assertEquals("Todo bien", r.resumen());
+        s[0].verify();
+    }
+
+    @Test
+    @DisplayName("si el modelo principal sigue fallando usa el modelo de respaldo")
+    void usa_respaldo() {
+        MockRestServiceServer[] s = new MockRestServiceServer[1];
+        GeminiAsistenteAdapter a = resiliente(s, "modelo-respaldo");
+        s[0].expect(requestTo(URL)).andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE));
+        s[0].expect(requestTo(URL)).andRespond(withException(new IOException("timeout")));
+        s[0].expect(requestTo(URL_RESPALDO))
+                .andRespond(withSuccess(respuestaGemini(JSON_OK), MediaType.APPLICATION_JSON));
+
+        ResultadoAsistente r = a.priorizarSolicitudes(contexto, solicitudes);
+
+        assertEquals("Todo bien", r.resumen());
+        s[0].verify();
+    }
+
+    @Test
+    @DisplayName("si el modelo principal ya no existe (404) pasa directo al de respaldo")
+    void respaldo_si_404() {
+        MockRestServiceServer[] s = new MockRestServiceServer[1];
+        GeminiAsistenteAdapter a = resiliente(s, "modelo-respaldo");
+        s[0].expect(requestTo(URL)).andRespond(withStatus(HttpStatus.NOT_FOUND));
+        s[0].expect(requestTo(URL_RESPALDO))
+                .andRespond(withSuccess(respuestaGemini(JSON_OK), MediaType.APPLICATION_JSON));
+
+        assertEquals("Todo bien", a.priorizarSolicitudes(contexto, solicitudes).resumen());
+        s[0].verify();
+    }
+
+    @Test
+    @DisplayName("si todo falla con 503 explica que Gemini está saturado")
+    void mensaje_saturado() {
+        MockRestServiceServer[] s = new MockRestServiceServer[1];
+        GeminiAsistenteAdapter a = resiliente(s, "modelo-respaldo");
+        s[0].expect(requestTo(URL)).andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE));
+        s[0].expect(requestTo(URL)).andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE));
+        s[0].expect(requestTo(URL_RESPALDO)).andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE));
+
+        AsistenteNoDisponibleException ex = assertThrows(AsistenteNoDisponibleException.class,
+                () -> a.priorizarSolicitudes(contexto, solicitudes));
+
+        assertTrue(ex.getMessage().contains("saturado"));
+        s[0].verify();
+    }
+
+    @Test
+    @DisplayName("un error que no es pasajero (429) no se reintenta ni cambia de modelo")
+    void no_reintenta_429() {
+        MockRestServiceServer[] s = new MockRestServiceServer[1];
+        GeminiAsistenteAdapter a = resiliente(s, "modelo-respaldo");
+        s[0].expect(requestTo(URL)).andRespond(withStatus(HttpStatus.TOO_MANY_REQUESTS));
+
+        AsistenteNoDisponibleException ex = assertThrows(AsistenteNoDisponibleException.class,
+                () -> a.priorizarSolicitudes(contexto, solicitudes));
+
+        assertTrue(ex.getMessage().contains("límite"));
+        s[0].verify();
+    }
+
+    @Test
+    @DisplayName("un modelo de respaldo igual al principal se ignora")
+    void respaldo_igual_se_ignora() {
+        MockRestServiceServer[] s = new MockRestServiceServer[1];
+        GeminiAsistenteAdapter a = resiliente(s, "modelo-x");
+        s[0].expect(requestTo(URL)).andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE));
+        s[0].expect(requestTo(URL)).andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE));
+
+        assertThrows(AsistenteNoDisponibleException.class, () -> a.priorizarSolicitudes(contexto, solicitudes));
+        s[0].verify();
+    }
 }

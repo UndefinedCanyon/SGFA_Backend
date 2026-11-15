@@ -43,9 +43,10 @@ public class AsistenteConfig {
     @Bean
     public AsistenteIAPort asistenteIAPort(@Value("${asistente.proveedor:auto}") String proveedor,
                                            @Value("${GEMINI_API_KEY:}") String claveGemini,
-                                           @Value("${asistente.gemini.modelo:gemini-2.5-flash}") String modelo,
+                                           @Value("${asistente.gemini.modelo:gemini-3.6-flash}") String modelo,
+                                           @Value("${asistente.gemini.modelo-respaldo:gemini-3.5-flash-lite}") String modeloRespaldo,
                                            @Value("${asistente.limite-por-minuto:6}") int limitePorMinuto) {
-        return crearAsistente(proveedor, claveGemini, modelo, limitePorMinuto, URL_GEMINI);
+        return crearAsistente(proveedor, claveGemini, modelo, modeloRespaldo, limitePorMinuto, URL_GEMINI);
     }
 
     @Bean
@@ -63,6 +64,11 @@ public class AsistenteConfig {
 
     static AsistenteIAPort crearAsistente(String proveedor, String claveGemini, String modelo,
                                           int limitePorMinuto, String urlBase) {
+        return crearAsistente(proveedor, claveGemini, modelo, null, limitePorMinuto, urlBase);
+    }
+
+    static AsistenteIAPort crearAsistente(String proveedor, String claveGemini, String modelo,
+                                          String modeloRespaldo, int limitePorMinuto, String urlBase) {
         String elegido = proveedor == null ? "auto" : proveedor.trim().toLowerCase(Locale.ROOT);
         boolean hayClave = claveGemini != null && !claveGemini.isBlank();
 
@@ -75,10 +81,10 @@ public class AsistenteConfig {
                     throw new IllegalStateException(
                             "asistente.proveedor=gemini requiere definir GEMINI_API_KEY.");
                 }
-                return crearGemini(claveGemini, modelo, limitePorMinuto, urlBase);
+                return crearGemini(claveGemini, modelo, modeloRespaldo, limitePorMinuto, urlBase);
             case "auto":
                 if (hayClave) {
-                    return crearGemini(claveGemini, modelo, limitePorMinuto, urlBase);
+                    return crearGemini(claveGemini, modelo, modeloRespaldo, limitePorMinuto, urlBase);
                 }
                 log.warn("GEMINI_API_KEY no está definida: el asistente funciona en modo demostración (sin IA).");
                 return new AsistenteIAFalsoAdapter();
@@ -88,10 +94,11 @@ public class AsistenteConfig {
         }
     }
 
-    private static AsistenteIAPort crearGemini(String clave, String modelo, int limitePorMinuto, String urlBase) {
+    private static AsistenteIAPort crearGemini(String clave, String modelo, String modeloRespaldo,
+                                               int limitePorMinuto, String urlBase) {
         HttpClient cliente = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
         JdkClientHttpRequestFactory fabrica = new JdkClientHttpRequestFactory(cliente);
-        fabrica.setReadTimeout(Duration.ofSeconds(30));
+        fabrica.setReadTimeout(Duration.ofSeconds(20));
 
         RestClient restClient = RestClient.builder()
                 .baseUrl(urlBase)
@@ -99,7 +106,9 @@ public class AsistenteConfig {
                 .requestFactory(fabrica)
                 .build();
 
-        log.info("Asistente de IA: Gemini (modelo {}), máximo {} análisis por minuto.", modelo, limitePorMinuto);
-        return new AsistenteIALimitado(new GeminiAsistenteAdapter(restClient, modelo), limitePorMinuto, Clock.systemUTC());
+        log.info("Asistente de IA: Gemini (modelo {}, respaldo {}), máximo {} análisis por minuto.",
+                modelo, modeloRespaldo == null || modeloRespaldo.isBlank() ? "ninguno" : modeloRespaldo, limitePorMinuto);
+        return new AsistenteIALimitado(new GeminiAsistenteAdapter(restClient, modelo, modeloRespaldo, 1500),
+                limitePorMinuto, Clock.systemUTC());
     }
 }

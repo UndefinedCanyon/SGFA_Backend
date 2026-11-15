@@ -53,12 +53,38 @@ public class GeminiAsistenteAdapter implements AsistenteIAPort {
             - Incluye una sugerencia por cada solicitud, usando exactamente el id indicado.
             """;
 
+    /** Intentos sobre el modelo principal cuando Gemini falla de forma pasajera (saturación, red). */
+    static final int INTENTOS_MODELO_PRINCIPAL = 2;
+
     private final RestClient restClient;
     private final String modelo;
+    private final String modeloRespaldo;
+    private final int intentosPrincipal;
+    private final long esperaEntreIntentosMs;
 
+    /** Sin reintentos ni modelo de respaldo: una sola llamada al modelo indicado. */
     public GeminiAsistenteAdapter(RestClient restClient, String modelo) {
+        this(restClient, modelo, null, 1, 0);
+    }
+
+    /**
+     * Con tolerancia a fallos: si el modelo principal responde con un error pasajero se reintenta y,
+     * si sigue fallando, se prueba una vez con el modelo de respaldo (si se indicó uno distinto).
+     */
+    public GeminiAsistenteAdapter(RestClient restClient, String modelo, String modeloRespaldo,
+                                  long esperaEntreIntentosMs) {
+        this(restClient, modelo, modeloRespaldo, INTENTOS_MODELO_PRINCIPAL, esperaEntreIntentosMs);
+    }
+
+    GeminiAsistenteAdapter(RestClient restClient, String modelo, String modeloRespaldo,
+                           int intentosPrincipal, long esperaEntreIntentosMs) {
         this.restClient = restClient;
         this.modelo = modelo;
+        boolean hayRespaldo = modeloRespaldo != null && !modeloRespaldo.isBlank()
+                && !modeloRespaldo.trim().equals(modelo);
+        this.modeloRespaldo = hayRespaldo ? modeloRespaldo.trim() : null;
+        this.intentosPrincipal = Math.max(1, intentosPrincipal);
+        this.esperaEntreIntentosMs = Math.max(0, esperaEntreIntentosMs);
     }
 
     @Override
@@ -68,24 +94,67 @@ public class GeminiAsistenteAdapter implements AsistenteIAPort {
 
     @Override
     public ResultadoAsistente priorizarSolicitudes(ContextoEdicion contexto, List<ResumenSolicitud> solicitudes) {
-        Map<String, Object> respuesta;
-        try {
-            respuesta = restClient.post()
-                    .uri("/models/{modelo}:generateContent", modelo)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(construirCuerpo(contexto, solicitudes))
-                    .retrieve()
-                    .body(new ParameterizedTypeReference<Map<String, Object>>() {
-                    });
-        } catch (RestClientResponseException ex) {
-            throw traducirErrorHttp(ex);
-        } catch (RestClientException ex) {
-            log.warn("No se pudo conectar con Gemini: {}", ex.getMessage());
-            throw new AsistenteNoDisponibleException(
-                    "No se pudo conectar con el asistente de IA. Revisa la conexión e intenta de nuevo.", ex);
-        }
+        Map<String, Object> cuerpo = construirCuerpo(contexto, solicitudes);
+        List<String> modelos = modeloRespaldo == null ? List.of(modelo) : List.of(modelo, modeloRespaldo);
 
-        return interpretar(respuesta);
+        AsistenteNoDisponibleException ultimoError = null;
+        for (int posicion = 0; posicion < modelos.size(); posicion++) {
+            String actual = modelos.get(posicion);
+            boolean hayOtroModelo = posicion < modelos.size() - 1;
+            int intentos = posicion == 0 ? intentosPrincipal : 1;
+
+            for (int intento = 1; intento <= intentos; intento++) {
+                try {
+                    return interpretar(llamar(actual, cuerpo));
+                } catch (RestClientResponseException ex) {
+                    ultimoError = traducirErrorHttp(ex);
+                    int estado = ex.getStatusCode().value();
+                    if (!esPasajero(estado)) {
+                        if (estado == 404 && hayOtroModelo) {
+                            break; // el modelo ya no existe: se pasa al de respaldo
+                        }
+                        throw ultimoError;
+                    }
+                } catch (RestClientException ex) {
+                    log.warn("No se pudo conectar con Gemini (modelo {}): {}", actual, ex.getMessage());
+                    ultimoError = new AsistenteNoDisponibleException(
+                            "No se pudo conectar con el asistente de IA. Revisa la conexión e intenta de nuevo.", ex);
+                }
+                if (intento < intentos) {
+                    pausar();
+                }
+            }
+            if (hayOtroModelo) {
+                log.warn("Gemini falló con el modelo {}; se prueba con el de respaldo {}.", actual, modeloRespaldo);
+            }
+        }
+        throw ultimoError;
+    }
+
+    private Map<String, Object> llamar(String modeloAUsar, Map<String, Object> cuerpo) {
+        return restClient.post()
+                .uri("/models/{modelo}:generateContent", modeloAUsar)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(cuerpo)
+                .retrieve()
+                .body(new ParameterizedTypeReference<Map<String, Object>>() {
+                });
+    }
+
+    /** Errores que suelen resolverse solos: servidor saturado o caído un momento. */
+    private static boolean esPasajero(int estado) {
+        return estado == 500 || estado == 502 || estado == 503 || estado == 504;
+    }
+
+    private void pausar() {
+        if (esperaEntreIntentosMs <= 0) {
+            return;
+        }
+        try {
+            Thread.sleep(esperaEntreIntentosMs);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     // ---------------------------------------------------------------- petición
@@ -170,6 +239,10 @@ public class GeminiAsistenteAdapter implements AsistenteIAPort {
         if (estado == 404) {
             return new AsistenteNoDisponibleException(
                     "El modelo de IA configurado no existe. Revisa GEMINI_MODEL en la configuración.", ex);
+        }
+        if (estado == 503) {
+            return new AsistenteNoDisponibleException(
+                    "Gemini está saturado en este momento. Intenta de nuevo en unos minutos.", ex);
         }
         return new AsistenteNoDisponibleException(
                 "El asistente de IA no está disponible en este momento. Intenta de nuevo más tarde.", ex);
