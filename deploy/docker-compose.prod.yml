@@ -1,0 +1,93 @@
+# Producción (VM de Azure). Se copia a ~/sgfa/ y se usa con el archivo .env de esa carpeta.
+# Solo Caddy publica puertos (80 y 443). MySQL, backend y frontend quedan en la red interna.
+services:
+  db:
+    image: mysql:8.0
+    container_name: sgfa-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: sgfa_db
+    command: >-
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --innodb-buffer-pool-size=256M
+      --max-connections=60
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    mem_limit: 900m
+
+  backend:
+    image: ghcr.io/${GHCR_OWNER}/sgfa-backend:${BACKEND_TAG:-latest}
+    container_name: sgfa-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://db:3306/sgfa_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Bogota"
+      SPRING_DATASOURCE_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-7200000}
+      CORS_ORIGINS: https://${DOMINIO}
+      APP_URL: https://${DOMINIO}
+      SWAGGER_ENABLED: "false"
+      JPA_SHOW_SQL: "false"
+      MAIL_FROM: ${MAIL_FROM}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_AUTH: ${MAIL_AUTH:-true}
+      MAIL_STARTTLS: ${MAIL_STARTTLS:-true}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.6-flash}
+      GEMINI_MODEL_RESPALDO: ${GEMINI_MODEL_RESPALDO:-gemini-3.5-flash-lite}
+      ASISTENTE_PROVEEDOR: ${ASISTENTE_PROVEEDOR:-auto}
+      JAVA_TOOL_OPTIONS: "-Xms128m -Xmx640m"
+    volumes:
+      - imagenes_data:/data/imagenes
+      - logs_data:/data/logs
+    stop_grace_period: 30s
+    mem_limit: 1g
+
+  frontend:
+    image: ghcr.io/${GHCR_OWNER}/sgfa-frontend:${FRONTEND_TAG:-latest}
+    container_name: sgfa-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    mem_limit: 128m
+
+  caddy:
+    image: caddy:2
+    container_name: sgfa-caddy
+    restart: unless-stopped
+    depends_on:
+      - frontend
+      - backend
+    environment:
+      DOMINIO: ${DOMINIO}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  db_data:
+  imagenes_data:
+  logs_data:
+  caddy_data:
+  caddy_config:

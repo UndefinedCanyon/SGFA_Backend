@@ -1,0 +1,13 @@
+# Caddy obtiene y renueva solo el certificado HTTPS (Let's Encrypt) para el dominio.
+{$DOMINIO} {
+	encode gzip
+
+	# La API vive bajo /api; todo lo demás lo sirve el frontend.
+	handle /api/* {
+		reverse_proxy backend:8080
+	}
+
+	handle {
+		reverse_proxy frontend:80
+	}
+}
