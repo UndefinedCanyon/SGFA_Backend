@@ -13,6 +13,8 @@ services:
       --collation-server=utf8mb4_unicode_ci
       --innodb-buffer-pool-size=256M
       --max-connections=60
+    ports:
+      - "127.0.0.1:3307:3306"
     volumes:
       - db_data:/var/lib/mysql
       - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
@@ -59,8 +61,6 @@ services:
       - logs_data:/data/logs
     stop_grace_period: 30s
     mem_limit: 1g
-    ports:
-      - "127.0.0.1:3307:3306"
 
   frontend:
     image: ghcr.io/${GHCR_OWNER}/sgfa-frontend:${FRONTEND_TAG:-latest}
